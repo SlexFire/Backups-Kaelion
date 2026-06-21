@@ -1,0 +1,1303 @@
+<div id="game-container">
+    <div id="border">
+        <div id="canvas">
+            <canvas id="background"></canvas>
+            <canvas id="entities"></canvas>
+            <canvas id="entities-fore"></canvas>
+            <canvas id="foreground"></canvas>
+            <canvas id="entities-mask"></canvas>
+            <canvas id="overlay"></canvas>
+            <canvas id="text-canvas"></canvas>
+            <canvas id="cursor"></canvas>
+        </div>
+
+        <div id="welcome" class="slice-container">
+            <div id="close-welcome" class="close-container"></div>
+
+            <div id="welcome-info">
+                <h1>Welcome to Kaelion!</h1>
+
+                <div id="welcome-stats">
+                    <strong>Last login:</strong>
+                    <strong>Time played:</strong>
+                </div>
+
+                <div id="welcome-changelog" class="slice-inner-container">
+                    <ul>
+                        <li>Version 0.3.4-beta</li>
+                        <li>- Added new stuff</li>
+                        <li>- Added more new stuff</li>
+                        <li>- Added even more new stuff</li>
+                        <li>- Added new stuff</li>
+                        <li>- Added new stuff</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="welcome-play" class="slice-inner-container">
+                <div id="welcome-instructions">
+                    <h2>How to Play</h2>
+
+                    <div id="welcome-instructions-keyboard">
+                        <span>
+                            Use <strong>WASD</strong>, the <strong>Arrow Keys</strong>, or <strong
+                                >Click</strong
+                            > to move around.
+                        </span>
+
+                        <div class="welcome-controls">
+                            <div id="controls-wasd"></div>
+                            <div id="controls-arrows"></div>
+                            <div id="controls-click"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="welcome-daily-rewards">
+                    <h2>Daily Rewards</h2>
+
+                    <div id="welcome-daily-rewards-items">
+                        <div class="slice-item-slot"></div>
+                        <div class="slice-item-slot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quest" class="slice-container">
+            <div id="close-quest" class="close-container"></div>
+
+            <h3 class="quest-title">Quest Name</h3>
+            <div class="quest-description"></div>
+            <ul class="quest-rewards"></ul>
+
+            <div id="quest-button" class="slice-button stroke">Start Quest</div>
+        </div>
+
+        <div id="in-app-store" class="slice-container-fancy">
+            <div id="close-in-app-store" class="close-container-fancy"></div>
+        </div>
+
+        <div id="player-info">
+            <div id="player-bars">
+                <div id="health" class="safari-only">
+                    <div id="health-mask" class="health-mask-base"></div>
+                    <div class="health-text stroke"></div>
+                </div>
+
+                <div id="environment-hud" class="environment-hud-hidden" aria-hidden="true">
+                    <div class="env-hud-compact">
+                        <img
+                            id="env-time-icon"
+                            class="env-hud-time-icon"
+                            src="/img/interface/environment/morning.png"
+                            alt=""
+                            width="22"
+                            height="22"
+                            draggable="false"
+                        />
+                        <span id="env-time-timer" class="env-hud-timer stroke">--:--</span>
+                        <img
+                            id="env-weather-icon"
+                            class="env-hud-weather-icon"
+                            src="/img/interface/environment/clear.png"
+                            alt=""
+                            width="22"
+                            height="22"
+                            draggable="false"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div id="mana" class="safari-only">
+                <div id="mana-mask"></div>
+                <div class="mana-text stroke"></div>
+            </div>
+            <div id="buytoken-button" title="KCoin"></div>
+        </div>
+
+        <div id="hud-buttons">
+            <ul id="buttons-row-top" class="hud-buttons-row hud-buttons-collapsible">
+                <li><div id="cashshop-button" title="Loja Cash"></div></li>
+                <li><div id="hud-e-2-button"></div></li>
+                <li><div id="battlepass-button" title="Passe de Batalha"></div></li>
+                <li class="hud-buttons-collapsible"><div id="cosmo-button" title="Cosmo"></div></li>
+            </ul>
+
+            <ul id="buttons" class="hud-buttons-row">
+                <li class="hud-buttons-collapsible"><div id="inventory-button" title="Inventário"></div></li>
+                <li class="hud-buttons-collapsible"><div id="tasks-button" title="Tasks"></div></li>
+                <li class="hud-buttons-collapsible"><div id="quests-button" title="Missões"></div></li>
+                <li class="hud-buttons-collapsible"><div id="warp-button" title="Mapa"></div></li>
+                <li class="hud-buttons-collapsible"><div id="profile-button" title="Perfil"></div></li>
+                <li class="hud-buttons-collapsible"><div id="friends-button" title="Amigos"></div></li>
+                <li class="hud-buttons-collapsible"><div id="chat-button" title="Chat"></div></li>
+                <li class="hud-buttons-collapsible"><div id="settings-button" title="Configurações"></div></li>
+                <li>
+                    <div
+                        id="hud-toggle-button"
+                        title="Menu HUD"
+                        role="button"
+                        tabindex="0"
+                        aria-expanded="true"
+                    ></div>
+                </li>
+            </ul>
+        </div>
+
+        <div id="chat">
+            <div id="chat-log"></div>
+            <div id="chat-frame"></div>
+
+            <input
+                title="Enter your message!"
+                id="chat-input"
+                type="text"
+                maxlength="256"
+                autocomplete="off"
+                data-lpignore="true"
+            />
+        </div>
+
+        <div id="joystick" hidden>
+            <div id="joystick-handle"></div>
+        </div>
+
+        <div id="zoom-buttons">
+            <button id="zoom-in" title="Zoom in"></button>
+            <button id="zoom-out" title="Zoom out"></button>
+        </div>
+
+        <div id="ability-shortcut" hidden>
+            <div id="ability-quickslot1" class="ability-quickslot"></div>
+            <div id="ability-quickslot2" class="ability-quickslot"></div>
+            <div id="ability-quickslot3" class="ability-quickslot"></div>
+            <div id="ability-quickslot4" class="ability-quickslot"></div>
+        </div>
+
+        <div id="odin-skills-bar">
+            <div class="odin-skills-panel">
+                <div
+                    class="odin-skills-panel-edges"
+                    data-game-tip="Arraste para mover · duplo clique para centralizar · clique no slot para usar"
+                    data-game-tip-delay="5000"
+                    aria-hidden="true"
+                >
+                    <span class="odin-skills-panel-edge odin-skills-panel-edge--top"></span>
+                    <span class="odin-skills-panel-edge odin-skills-panel-edge--right"></span>
+                    <span class="odin-skills-panel-edge odin-skills-panel-edge--bottom"></span>
+                    <span class="odin-skills-panel-edge odin-skills-panel-edge--left"></span>
+                </div>
+                <div class="odin-skills-drag-handle" aria-hidden="true"></div>
+                <div class="odin-skills-slots">
+                    <div id="odin-skill-slot1" class="odin-skill-slot empty" data-slot="0">
+                        <div class="odin-skill-icon"></div>
+                        <span class="odin-skill-hotkey">1</span>
+                        <span class="odin-skill-level"></span>
+                        <span class="odin-skill-exp"><span class="odin-skill-exp-fill"></span></span>
+                        <div class="odin-skill-cooldown-overlay" hidden>
+                            <div class="odin-skill-cooldown-sweep"></div>
+                            <span class="odin-skill-cooldown-text"></span>
+                        </div>
+                        <div class="odin-skill-vip-lock" hidden>
+                            <span class="odin-skill-vip-lock-label"></span>
+                        </div>
+                    </div>
+                    <div id="odin-skill-slot2" class="odin-skill-slot empty" data-slot="1">
+                        <div class="odin-skill-icon"></div>
+                        <span class="odin-skill-hotkey">2</span>
+                        <span class="odin-skill-level"></span>
+                        <span class="odin-skill-exp"><span class="odin-skill-exp-fill"></span></span>
+                        <div class="odin-skill-cooldown-overlay" hidden>
+                            <div class="odin-skill-cooldown-sweep"></div>
+                            <span class="odin-skill-cooldown-text"></span>
+                        </div>
+                        <div class="odin-skill-vip-lock" hidden>
+                            <span class="odin-skill-vip-lock-label"></span>
+                        </div>
+                    </div>
+                    <div id="odin-skill-slot3" class="odin-skill-slot empty" data-slot="2">
+                        <div class="odin-skill-icon"></div>
+                        <span class="odin-skill-hotkey">3</span>
+                        <span class="odin-skill-level"></span>
+                        <span class="odin-skill-exp"><span class="odin-skill-exp-fill"></span></span>
+                        <div class="odin-skill-cooldown-overlay" hidden>
+                            <div class="odin-skill-cooldown-sweep"></div>
+                            <span class="odin-skill-cooldown-text"></span>
+                        </div>
+                        <div class="odin-skill-vip-lock" hidden>
+                            <span class="odin-skill-vip-lock-label"></span>
+                        </div>
+                    </div>
+                    <div id="odin-skill-slot4" class="odin-skill-slot empty" data-slot="3">
+                        <div class="odin-skill-icon"></div>
+                        <span class="odin-skill-hotkey">4</span>
+                        <span class="odin-skill-level"></span>
+                        <span class="odin-skill-exp"><span class="odin-skill-exp-fill"></span></span>
+                        <div class="odin-skill-cooldown-overlay" hidden>
+                            <div class="odin-skill-cooldown-sweep"></div>
+                            <span class="odin-skill-cooldown-text"></span>
+                        </div>
+                        <div class="odin-skill-vip-lock" hidden>
+                            <span class="odin-skill-vip-lock-label"></span>
+                        </div>
+                    </div>
+                    <div id="odin-skill-slot5" class="odin-skill-slot empty" data-slot="4">
+                        <div class="odin-skill-icon"></div>
+                        <span class="odin-skill-hotkey">5</span>
+                        <span class="odin-skill-level"></span>
+                        <span class="odin-skill-exp"><span class="odin-skill-exp-fill"></span></span>
+                        <div class="odin-skill-cooldown-overlay" hidden>
+                            <div class="odin-skill-cooldown-sweep"></div>
+                            <span class="odin-skill-cooldown-text"></span>
+                        </div>
+                        <div class="odin-skill-vip-lock" hidden>
+                            <span class="odin-skill-vip-lock-label"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile-container" class="slice-page">
+            <div id="state-page">
+                <div id="profile-stats">
+                    <span>
+                        <span id="profile-level"></span>
+                    </span>
+                    <span>
+                        <strong>Total Exp:</strong>
+                        <span id="profile-experience"></span>
+                    </span>
+
+                    <ul id="attack-style-list">
+                        <li class="attack-style-box">
+                            <div class="attack-style attack-style-slash"></div>
+                        </li>
+                        <li class="attack-style-box">
+                            <div class="attack-style attack-style-defensive"></div>
+                        </li>
+                        <li class="attack-style-box">
+                            <div class="attack-style attack-style-shared"></div>
+                        </li>
+                    </ul>
+
+                    <div class="button-row">
+                        <div id="guilds-button"></div>
+                        <div id="leaderboards-button"></div>
+                        <div id="equipment-button"></div>
+                        <div id="pickup-pet-button" hidden></div>
+                    </div>
+                </div>
+
+                <ul id="profile-equipment-slots">
+                    <li class="equipment-slot equipment-slot-helmet slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-pendant slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-arrows slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                        <div class="equipment-slot-arrows-count stroke"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-chestplate slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-weapon slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-shield slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-ring slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-armour-skin slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-weapon-skin slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-legplates slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-cape slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-boots slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="skills-page">
+                <div id="skill-info" class="slice-dialog stroke">
+                    <div class="skill-info-header">
+                        <div class="slice-item-slot">
+                            <div class="skill-info-image"></div>
+                        </div>
+                        <div class="skill-info-title"></div>
+                    </div>
+                    <div class="skill-info-details"></div>
+                </div>
+                <div id="skills-list"><ul></ul></div>
+            </div>
+
+            <div id="profile-navigator">
+                <div class="previous"></div>
+                <div class="next"></div>
+            </div>
+        </div>
+
+        <div id="settings-page" class="slice-container">
+            <div id="close-settings" class="close-container"></div>
+
+            <div id="settings-container">
+                <div id="input-settings" class="slice-inner-container">
+                    <div class="col">
+                        <label>
+                            <span id="music-volume-text">Music Volume</span>
+
+                            <input
+                                title="Music Volume"
+                                id="music"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="100"
+                                step="10"
+                                aria-labelledby="music-volume-text"
+                            />
+                        </label>
+
+                        <label>
+                            <span id="sound-volume-text">Sound Volume</span>
+
+                            <input
+                                title="Sound Volume"
+                                id="sound"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="100"
+                                step="10"
+                                aria-labelledby="sound-volume-text"
+                            />
+                        </label>
+
+                        <label>
+                            <span id="brightness-text">Brightness</span>
+
+                            <input
+                                title="Brightness"
+                                id="brightness"
+                                type="range"
+                                min="0"
+                                max="100"
+                                value="100"
+                                step="10"
+                                aria-labelledby="brightness-text"
+                            />
+                        </label>
+
+                        <label id="audio-enabled-checkbox" class="check">
+                            <span id="audio-enabled-checkbox-text">Audio Enabled</span>
+
+                            <input type="checkbox" aria-labelledby="audio-enabled-checkbox-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="low-power-checkbox" class="check">
+                            <span id="low-power-checkbox-text">Low Power Mode</span>
+
+                            <input type="checkbox" aria-labelledby="low-power-checkbox-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="joystick-enabled-checkbox" class="check">
+                            <span id="joystick-enabled-checkbox-text">Joystick Enabled</span>
+
+                            <input
+                                type="checkbox"
+                                aria-labelledby="joystick-enabled-checkbox-text"
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+
+                    <div class="col">
+                        <label id="debug-mode-checkbox" class="check">
+                            <span id="debug-mode-checkbox-text">Debug Mode</span>
+
+                            <input type="checkbox" aria-labelledby="debug-mode-checkbox-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="show-names-checkbox" class="check">
+                            <span id="show-names-checkbox-text">Show Names</span>
+
+                            <input type="checkbox" aria-labelledby="show-names-checkbox-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="show-levels-checkbox" class="check">
+                            <span id="show-levels-checkbox-text">Show Levels</span>
+
+                            <input type="checkbox" aria-labelledby="show-levels-checkbox-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="disable-region-caching-checkbox" class="check">
+                            <span id="disable-region-caching-text">Disable Caching</span>
+
+                            <input type="checkbox" aria-labelledby="disable-region-caching-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="webgl-checkbox" class="check">
+                            <span id="webgl-text">Enable WebGL</span>
+
+                            <input type="checkbox" aria-labelledby="webgl-text" />
+                            <span class="checkmark"></span>
+                        </label>
+
+                        <label id="frame-throttle">
+                            <span id="frame-throttle-text">FPS Throttle</span>
+
+                            <select
+                                id="frame-throttle-select"
+                                aria-labelledby="frame-throttle-text"
+                            >
+                                <option value="0">OFF</option>
+                                <option value="1">50 FPS</option>
+                                <option value="2">30 FPS</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="action-settings">
+                    <div id="game-info" class="slice-inner-container">
+                        <span>
+                            <strong>Game Version:</strong>
+                            <span id="game-info-version"></span>
+                        </span>
+
+                        <span>
+                            <strong>Game World:</strong>
+                            <span id="game-info-world"></span>
+                        </span>
+                    </div>
+
+                    <div
+                        role="button"
+                        id="logout-button"
+                        class="element-button element-button-red stroke"
+                        onclick="
+                        location.reload();
+                        "
+                        onkeydown="if (event.keyCode === 13) location.reload();"
+                        tabindex="0"
+                    >
+                        Log Out
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="friends-container" class="slice-page">
+            <div id="friends-page">
+                <ul id="friends-list" class="slice-list stroke"></ul>
+
+                <div class="dialog-buttons">
+                    <div id="add-friend" class="add"></div>
+                    <div id="remove-friend" class="remove"></div>
+                </div>
+            </div>
+
+            <dialog id="popup-container" class="slice-dialog">
+                <input
+                    id="popup-friend-input"
+                    class="stroke slice-input"
+                    type="text"
+                    maxlength="32"
+                    autocomplete="off"
+                    data-lpignore="true"
+                />
+
+                <div class="dialog-buttons">
+                    <div id="popup-friend-confirm" class="confirm"></div>
+                    <div id="popup-friend-cancel" class="cancel"></div>
+                </div>
+            </dialog>
+        </div>
+
+        <div id="attack-info" class="slice-dialog">
+            <div class="name"></div>
+            <div class="details"></div>
+            <div class="health"></div>
+        </div>
+
+        <div id="map-frame">
+            <div id="warp0" class="map-button"></div>
+            <div id="warp1" class="map-button"></div>
+            <div id="warp2" class="map-button"></div>
+            <div id="warp3" class="map-button"></div>
+            <div id="warp4" class="map-button"></div>
+            <div id="warp5" class="map-button"></div>
+
+            <div id="close-map-frame" class="close-container"></div>
+        </div>
+
+        <div id="inventory" class="slice-dialog">
+            <div id="inventory-container">
+                <ul></ul>
+            </div>
+        </div>
+
+        <div id="bank">
+            <div id="close-bank" class="close-container"></div>
+
+            <div id="bank-inventory-container">
+                <ul id="bank-inventory-slots"></ul>
+            </div>
+            <div id="bank-container">
+                <ul id="bank-slots"></ul>
+            </div>
+        </div>
+
+        <div id="trade" class="slice-container">
+            <div id="close-trade" class="close-container"></div>
+
+            <div id="trade-inventory">
+                <div class="title-decoration">Your Inventory</div>
+
+                <div id="trade-inventory-slots" class="slice-inner-container">
+                    <ul></ul>
+
+                    <dialog id="trade-count" class="slice-dialog">
+                        <div class="dialog-title">Input Amount</div>
+
+                        <input
+                            title="Count"
+                            type="number"
+                            class="dialog-count"
+                            min="1"
+                            step="1"
+                            size="6"
+                            maxlength="11"
+                        />
+
+                        <div class="dialog-buttons">
+                            <div class="confirm dialog-accept"></div>
+                            <div class="cancel dialog-cancel"></div>
+                        </div>
+                    </dialog>
+                </div>
+            </div>
+
+            <div id="trade-player">
+                <div id="trade-player-content">
+                    <div class="player-trade">
+                        <div id="trade-player-name" class="stroke"></div>
+                        <div id="trade-player-slots" class="slice-inner-container">
+                            <ul></ul>
+                        </div>
+                    </div>
+
+                    <div class="player-trade">
+                        <div id="trade-oplayer-name" class="stroke"></div>
+                        <div id="trade-oplayer-slots" class="slice-inner-container">
+                            <ul></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="trade-status"></div>
+                <div id="trade-accept" class="stroke slice-button">ACCEPT</div>
+            </div>
+        </div>
+
+        <div id="enchant" class="slice-container">
+            <div id="close-enchant" class="close-container"></div>
+
+            <div id="enchant-inventory" class="slice-inner-container">
+                <ul id="enchant-inventory-slots"></ul>
+            </div>
+
+            <div id="enchant-item">
+                <div id="enchant-item-selected" class="slice-item-slot">
+                    <div></div>
+                </div>
+
+                <div>
+                    <div id="enchant-item-shards" class="slice-item-slot">
+                        <div></div>
+                    </div>
+                    <div id="enchant-item-count"></div>
+                </div>
+
+                <div id="enchant-item-confirm" class="ok-check"></div>
+            </div>
+        </div>
+
+        <div id="store" class="slice-container">
+            <div id="close-store" class="close-container"></div>
+
+            <div id="store-content">
+                <div id="store-inventory">
+                    <div id="store-inventory-slots" class="slice-inner-container">
+                        <ul></ul>
+                    </div>
+
+                    <div id="store-sell">
+                        <div>
+                            <div class="slice-item-slot">
+                                <div id="store-sell-slot"></div>
+                            </div>
+                            <div id="store-sell-text"></div>
+                        </div>
+                        <div>
+                            <div class="slice-item-slot">
+                                <div id="store-sell-return-slot"></div>
+                            </div>
+                            <div id="store-sell-return-text"></div>
+                        </div>
+
+                        <div id="store-sell-confirm" class="ok-check"></div>
+                    </div>
+                </div>
+
+                <div id="store-slots">
+                    <div id="store-slots-content" class="slice-inner-container">
+                        <ul></ul>
+                    </div>
+                </div>
+            </div>
+
+            <dialog id="store-buy" class="slice-dialog">
+                <div class="dialog-title">Input Buy Amount</div>
+
+                <input
+                    title="Count"
+                    type="number"
+                    class="dialog-count"
+                    min="1"
+                    step="1"
+                    size="6"
+                    maxlength="11"
+                />
+
+                <div class="dialog-buttons">
+                    <div class="confirm dialog-accept"></div>
+                    <div class="cancel dialog-cancel"></div>
+                </div>
+            </dialog>
+        </div>
+
+        <div id="buy-token" class="slice-container">
+            <div id="close-buy-token" class="close-container"></div>
+
+            <h3 class="buy-token-title stroke">KCoin — Doação</h3>
+
+            <div class="buy-token-content slice-inner-container">
+                <p class="buy-token-lead stroke">
+                    Apoie o Kaelion Online e receba KCoins para usar na loja do jogo.
+                </p>
+                <p class="buy-token-rate stroke">1 KCoin = R$ 1,00 — o QR Code PIX aparece aqui após gerar o pagamento</p>
+
+                <form id="buy-token-form" class="buy-token-form" autocomplete="off">
+                    <label class="buy-token-field">
+                        <span class="stroke">Valor (R$)</span>
+                        <input
+                            id="buy-token-amount"
+                            class="slice-input stroke"
+                            type="number"
+                            min="1"
+                            step="1"
+                            value="10"
+                            inputmode="numeric"
+                            required
+                        />
+                    </label>
+                    <p id="buy-token-kcoin-preview" class="buy-token-kcoin-preview stroke">
+                        Você receberá 10 KCoins
+                    </p>
+
+                    <label class="buy-token-field">
+                        <span class="stroke">E-mail</span>
+                        <input
+                            id="buy-token-email"
+                            class="slice-input stroke"
+                            type="email"
+                            maxlength="128"
+                            placeholder="seu@email.com"
+                            required
+                        />
+                    </label>
+
+                    <label class="buy-token-field">
+                        <span class="stroke">CPF (pessoa física)</span>
+                        <input
+                            id="buy-token-cpf"
+                            class="slice-input stroke"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="14"
+                            placeholder="000.000.000-00"
+                            autocomplete="off"
+                            required
+                        />
+                    </label>
+
+                    <div class="buy-token-actions">
+                        <button
+                            id="buy-token-pay"
+                            type="button"
+                            class="slice-button stroke buy-token-action-primary"
+                        >
+                            Pagar com PIX
+                        </button>
+                        <button
+                            id="buy-token-regenerate"
+                            type="button"
+                            class="slice-button stroke buy-token-action-secondary"
+                            disabled
+                        >
+                            Gerar novo QR Code
+                        </button>
+                    </div>
+                </form>
+
+                <p id="buy-token-status" class="buy-token-status" hidden></p>
+
+                <div id="buy-token-qr" class="buy-token-qr" hidden>
+                    <img
+                        id="buy-token-qr-image"
+                        class="buy-token-qr-image"
+                        alt="QR Code PIX — pagamento KCoin"
+                        width="128"
+                        height="128"
+                    />
+                    <p class="buy-token-qr-caption stroke">Escaneie com o app do seu banco</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="cosmo-bag" class="slice-container cosmo-bag-panel">
+            <div id="close-cosmo-bag" class="close-container"></div>
+
+            <h2 class="cosmo-bag-title stroke">COSMO</h2>
+
+            <div id="cosmo-bag-body">
+                <div id="cosmo-bag-equip">
+                    <div class="cosmo-bag-hotbar-layout">
+                        <div
+                            class="cosmo-hotbar-slot cosmo-hotbar-slot--top-left empty"
+                            data-slot="0"
+                        >
+                            <div class="cosmo-hotbar-skill-icon"></div>
+                            <span class="cosmo-hotbar-skill-level"></span>
+                        </div>
+                        <div
+                            class="cosmo-hotbar-slot cosmo-hotbar-slot--top-right empty"
+                            data-slot="1"
+                        >
+                            <div class="cosmo-hotbar-skill-icon"></div>
+                            <span class="cosmo-hotbar-skill-level"></span>
+                        </div>
+                        <div
+                            class="cosmo-hotbar-slot cosmo-hotbar-slot--center empty"
+                            data-slot="4"
+                        >
+                            <div class="cosmo-hotbar-skill-icon"></div>
+                            <span class="cosmo-hotbar-skill-level"></span>
+                        </div>
+                        <div
+                            class="cosmo-hotbar-slot cosmo-hotbar-slot--bottom-left empty"
+                            data-slot="2"
+                        >
+                            <div class="cosmo-hotbar-skill-icon"></div>
+                            <span class="cosmo-hotbar-skill-level"></span>
+                        </div>
+                        <div
+                            class="cosmo-hotbar-slot cosmo-hotbar-slot--bottom-right empty"
+                            data-slot="3"
+                        >
+                            <div class="cosmo-hotbar-skill-icon"></div>
+                            <span class="cosmo-hotbar-skill-level"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cosmo-bag-skills" class="cosmo-bag-inventory">
+                    <div class="cosmo-bag-inventory-title stroke">Cosmos</div>
+                    <div id="cosmo-bag-inventory" class="cosmo-bag-inventory-frame">
+                        <div id="cosmo-bag-inventory-container">
+                            <ul></ul>
+                        </div>
+                    </div>
+                    <button
+                        id="cosmo-bag-consume-btn"
+                        type="button"
+                        class="cosmo-bag-consume-btn slice-button-green stroke"
+                        hidden
+                    >
+                        Consumir
+                    </button>
+                </div>
+            </div>
+
+            <dialog id="cosmo-consume-confirm" class="slice-dialog cosmo-consume-dialog">
+                <div class="dialog-title stroke">Fundir Cosmos</div>
+                <p id="cosmo-consume-confirm-text" class="cosmo-consume-confirm-text stroke"></p>
+                <div class="dialog-buttons">
+                    <div class="confirm dialog-accept"></div>
+                    <div class="cancel dialog-cancel"></div>
+                </div>
+            </dialog>
+        </div>
+
+        <div id="battle-pass" class="slice-modal-battlepass">
+            <div id="close-battle-pass" class="close-container"></div>
+
+            <h2 class="battle-pass-title stroke">PASSE DE BATALHA</h2>
+
+            <div id="battle-pass-tracks">
+                <div class="battle-pass-track battle-pass-track-free">
+                    <div class="battle-pass-track-icon">
+                        <img src="/img/interface/battlepass/bpiconfree.png" alt="" width="64" height="64" />
+                        <span id="battle-pass-free-level" class="battle-pass-track-level stroke">Lv - 0</span>
+                    </div>
+                    <div id="battle-pass-free-rewards" class="battle-pass-track-rewards">
+                        <ul></ul>
+                    </div>
+                </div>
+
+                <div class="battle-pass-track battle-pass-track-paid">
+                    <div class="battle-pass-track-icon">
+                        <img src="/img/interface/battlepass/bpiconpay.png" alt="" width="64" height="64" />
+                        <span id="battle-pass-paid-level" class="battle-pass-track-level stroke">Lv - 0</span>
+                    </div>
+                    <div id="battle-pass-paid-rewards" class="battle-pass-track-rewards">
+                        <ul></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cash-shop" class="slice-modal-cash">
+            <div id="close-cash-shop" class="close-container"></div>
+
+            <div id="cash-shop-tabs"></div>
+
+            <div id="cash-shop-items" class="slice-inner-container">
+                <ul></ul>
+            </div>
+
+            <dialog id="cash-shop-buy" class="slice-dialog">
+                <div class="dialog-title">Input Buy Amount</div>
+
+                <input
+                    title="Count"
+                    type="number"
+                    class="dialog-count"
+                    min="1"
+                    step="1"
+                    size="6"
+                    maxlength="11"
+                />
+
+                <div class="dialog-buttons">
+                    <div class="confirm dialog-accept"></div>
+                    <div class="cancel dialog-cancel"></div>
+                </div>
+            </dialog>
+        </div>
+
+        <div id="leaderboards" class="slice-container stroke">
+            <div id="close-leaderboards" class="close close-container"></div>
+
+            <div id="leaderboards-search" class="slice-inner-container">
+                <input
+                    title="Enter a search term..."
+                    id="leaderboards-search-input"
+                    class="slice-input"
+                    type="text"
+                    maxlength="32"
+                    autocomplete="off"
+                    data-lpignore="true"
+                    placeholder="Enter a term to search..."
+                />
+
+                <ul></ul>
+            </div>
+
+            <div id="leaderboards-results" class="slice-inner-container">
+                <ul></ul>
+            </div>
+        </div>
+
+        <div id="equipments" class="slice-container" hidden>
+            <div id="close-equipments" class="close-container"></div>
+
+            <div id="equipments-player-visual">
+                <div id="equipments-player-image">
+                    <canvas id="equipments-player-image-canvas"></canvas>
+
+                    <div id="equipments-player-image-navigator">
+                        <div class="previous"></div>
+                        <div class="next"></div>
+                    </div>
+                </div>
+                <ul id="equipment-slots">
+                    <li class="equipment-slot equipment-slot-helmet slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-pendant slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-arrows slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                        <div class="equipment-slot-arrows-count stroke"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-chestplate slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-weapon slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-shield slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-ring slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-armour-skin slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-weapon-skin slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-legplates slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-cape slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+
+                    <li class="equipment-slot equipment-slot-boots slice-list-item">
+                        <div class="equipment-slot-image"></div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="equipments-player-stats">
+                <div id="attack-stats">
+                    <p class="title">Attack Stats</p>
+                    <p class="melee">Melee:</p>
+                    <p class="archery">Archery:</p>
+                    <p class="magic">Magic:</p>
+                </div>
+
+                <div id="defense-stats">
+                    <p class="title">Defense Stats</p>
+                    <p class="melee">Melee:</p>
+                    <p class="archery">Archery:</p>
+                    <p class="magic">Magic:</p>
+                </div>
+
+                <div id="bonuses">
+                    <p class="title">Bonuses</p>
+                    <p class="accuracy">Accuracy:</p>
+                    <p class="strength">Strength:</p>
+                    <p class="archery">Archery:</p>
+                    <p class="magic">Magic:</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks" class="slice-container">
+            <div id="close-tasks" class="close-container"></div>
+
+            <div id="tasks-tab" class="slice-tab">
+                <div id="tasks-tab-arrow-left" class="slice-list-item">
+                    <div class="colour-button-arrow-left"></div>
+                </div>
+
+                <span id="tasks-tab-text">Diária</span>
+
+                <div id="tasks-tab-arrow-right" class="slice-list-item">
+                    <div class="colour-button-arrow-right slice-item"></div>
+                </div>
+            </div>
+
+            <div id="tasks-content" class="slice-inner-container">
+                <ul class="stroke"></ul>
+            </div>
+        </div>
+
+        <div id="quests" class="slice-container">
+            <div id="close-quests" class="close-container"></div>
+
+            <div id="quests-container">
+                <div id="quests-list" class="slice-inner-container stroke"><ul></ul></div>
+                <div id="quests-logs" class="slice-inner-container">
+                    <div id="quests-logs-container">
+                        <h1 id="quests-logs-title" class="stroke">Quest Title</h1>
+                        <p id="quests-logs-shortdesc"></p>
+
+                        <h3 class="stroke">Description</h3>
+                        <p id="quests-logs-description"></p>
+
+                        <h3 class="stroke">Reward</h3>
+                        <p id="quests-logs-rewards"></p>
+
+                        <h3 class="stroke">Requirements</h3>
+                        <p id="quests-logs-requirements">None</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bubbles"></div>
+
+        <div id="item-tooltip" class="slice-tooltip">
+            <div class="item-tooltip-title stroke"></div>
+            <div class="item-tooltip-body"></div>
+        </div>
+
+        <div id="game-tooltip" class="game-tooltip slice-tooltip" hidden>
+            <span class="game-tooltip-text stroke"></span>
+        </div>
+
+        <div id="notification" class="slice-dialog">
+            <div id="notification-text-title"></div>
+            <div id="notification-text-description"></div>
+        </div>
+
+        <div id="notifications">
+            <div id="notify-fade" class="fade"></div>
+            <div id="notify">
+                <div id="exclamation"></div>
+                <div id="notify-done" class="done"></div>
+            </div>
+            <div id="confirm">
+                <div id="question"></div>
+                <div id="confirm-done" class="done"></div>
+                <div id="cancel"></div>
+            </div>
+            <div id="message"></div>
+        </div>
+
+        <div id="action-container" class="slice-dialog">
+            <div id="action-page">
+                <div class="action-item-name stroke"></div>
+                <div class="action-item-description"></div>
+                <ul></ul>
+            </div>
+
+            <dialog id="action-drop" class="slice-dialog">
+                <div class="dialog-title">Input Drop Amount</div>
+
+                <input
+                    title="Count"
+                    type="number"
+                    class="dialog-count"
+                    min="1"
+                    step="1"
+                    size="6"
+                    maxlength="11"
+                />
+
+                <div class="dialog-buttons">
+                    <div class="confirm dialog-accept"></div>
+                    <div class="cancel dialog-cancel"></div>
+                </div>
+            </dialog>
+        </div>
+
+        <div id="crafting">
+            <div id="close-crafting" class="close-container"></div>
+
+            <ul id="crafting-options"></ul>
+            <ul id="crafting-requirements"></ul>
+
+            <div id="crafting-result" class="crafting-option disabled">
+                <div class="crafting-option-icon"></div>
+                <div class="crafting-option-count stroke"></div>
+            </div>
+
+            <div id="crafting-level" class="crafting-option disabled">
+                <div class="crafting-option-icon"></div>
+                <div class="crafting-option-count stroke"></div>
+            </div>
+
+            <div id="crafting-result-name" class="stroke"></div>
+
+            <ul class="crafting-buttons">
+                <li id="craft-one" class="amount-button amount-one active"></li>
+                <li id="craft-five" class="amount-button amount-five"></li>
+                <li id="craft-ten" class="amount-button amount-ten"></li>
+            </ul>
+
+            <div id="craft-button" class="stroke">Craft</div>
+        </div>
+
+        <div id="guilds" class="slice-container">
+            <div id="close-guilds" class="close-container"></div>
+
+            <div class="banner banner-grey">
+                <div id="banner-outline" class="banner-outline"></div>
+                <div id="banner-crest"></div>
+            </div>
+
+            <div id="guilds-list-container" class="stroke">
+                <div id="create-guild" class="element-button element-button stroke">Create</div>
+
+                <div class="title-decoration">Guilds</div>
+
+                <div id="guilds-list" class="slice-inner-container">
+                    <p id="guilds-info" class="stroke">There are no guilds available...</p>
+                    <ul></ul>
+                </div>
+            </div>
+
+            <div id="guilds-create" class="slice-inner-container">
+                <div id="banner-select">
+                    <div
+                        id="banner-colour-button"
+                        class="colour-select-button button-banner-colour active"
+                    >
+                    </div>
+                    <div id="banner-outline-button" class="colour-select-button outline-button-1">
+                        <div class="colour-button-arrow-left"></div>
+                        <div class="colour-button-arrow-right"></div>
+                    </div>
+                </div>
+
+                <div id="banner-options">
+                    <input
+                        id="guilds-name-input"
+                        type="text"
+                        maxlength="16"
+                        autocomplete="off"
+                        data-lpignore="true"
+                        placeholder="Enter a name..."
+                        class="guilds-name-input-image stroke slice-input"
+                    />
+
+                    <ul id="banner-colours"></ul>
+
+                    <div id="guilds-create-error"></div>
+
+                    <div class="button-row stroke">
+                        <div id="guilds-back-button" class="element-button element-button-red">
+                            Back
+                        </div>
+                        <div id="guilds-create-button" class="element-button">Create</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="guilds-info-container">
+                <div id="guilds-info-header">
+                    <div id="guilds-leave" class="element-button element-button-red stroke">
+                        Leave
+                    </div>
+
+                    <div id="guilds-name" class="title-decoration"></div>
+                </div>
+
+                <div id="member-list-container" class="slice-inner-container">
+                    <ul></ul>
+
+                    <dialog id="guild-member-dialog" class="slice-dialog">
+                        <h2 id="guild-member-selected">
+                            <!--  -->
+                        </h2>
+
+                        <div class="stroke button-row">
+                            <div id="guild-member-promote" class="element-button">Promote</div>
+
+                            <div id="guild-member-demote" class="element-button element-button-red">
+                                Demote
+                            </div>
+
+                            <div id="guild-member-kick" class="element-button element-button-red">
+                                Kick
+                            </div>
+                        </div>
+                    </dialog>
+                </div>
+
+                <div id="guilds-chat" class="slice-inner-container">
+                    <div id="guilds-chat-log"></div>
+                    <input
+                        id="guilds-chat-input"
+                        type="text"
+                        maxlength="256"
+                        autocomplete="off"
+                        data-lpignore="true"
+                        placeholder="Enter your message here..."
+                        class="guilds-chat-input-image stroke slice-input"
+                    />
+                </div>
+
+                <ul id="sidebar-list">
+                    <li id="sidebar-members" class="sidebar-element active">
+                        <div class="members-icon"></div>
+                    </li>
+                    <li id="sidebar-chat" class="sidebar-element">
+                        <div class="chat-icon"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="lootbag" class="slice-container">
+            <div id="close-lootbag" class="close-container"></div>
+
+            <div id="lootbag-container">
+                <div id="lootbag-items" class="slice-inner-container">
+                    <ul></ul>
+                </div>
+                <div id="lootbag-inventory" class="slice-inner-container">
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+
+        <ul id="interact" class="slice-dialog"></ul>
+
+        <div id="book" class="slice-container" hidden>
+            <div id="close-book" class="close-container"></div>
+
+            <div class="slice-inner-container"></div>
+            <div class="slice-inner-container"></div>
+        </div>
+    </div>
+</div>

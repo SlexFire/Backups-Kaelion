@@ -1,0 +1,1732 @@
+From 82be08b9dc4ff89d074572859e0f5a9b9ecc040a Mon Sep 17 00:00:00 2001
+From: SlexFire <landerfolder@yahoo.com.br>
+Date: Fri, 19 Jun 2026 17:31:27 -0300
+Subject: [PATCH 1/2] Sistema de Clima v1.0
+
+---
+ packages/client/src/game.ts                   |   4 +
+ packages/client/src/network/connection.ts     |  20 +
+ packages/client/src/network/messages.ts       |   9 +-
+ packages/client/src/renderer/environment.ts   | 595 ++++++++++++++++++
+ packages/client/src/renderer/renderer.ts      |  15 +
+ packages/client/src/renderer/updater.ts       |   1 +
+ packages/common/network/impl/environment.ts   |  17 +
+ packages/common/network/impl/index.ts         |   1 +
+ packages/common/network/opcodes.ts            |   5 +
+ packages/common/network/packets.ts            |   1 +
+ packages/common/types/environment.ts          |  66 ++
+ packages/common/types/map.d.ts                |  15 +-
+ packages/common/types/messages/outgoing.d.ts  |   1 +
+ packages/server/src/controllers/commands.ts   |  78 +++
+ .../game/entity/character/player/handler.ts   |   3 +
+ .../game/entity/character/player/incoming.ts  |   2 +
+ .../game/entity/character/player/player.ts    |  41 +-
+ .../src/game/environment/environment.ts       | 203 ++++++
+ packages/server/src/game/map/map.ts           | 299 ++++++++-
+ packages/server/src/game/world.ts             |   3 +
+ 20 files changed, 1373 insertions(+), 6 deletions(-)
+ create mode 100644 packages/client/src/renderer/environment.ts
+ create mode 100644 packages/common/network/impl/environment.ts
+ create mode 100644 packages/common/types/environment.ts
+ create mode 100644 packages/server/src/game/environment/environment.ts
+
+diff --git a/packages/client/src/game.ts b/packages/client/src/game.ts
+index e882ace..de88af8 100644
+--- a/packages/client/src/game.ts
++++ b/packages/client/src/game.ts
+@@ -17,6 +17,7 @@ import Socket from './network/socket';
+ import Camera from './renderer/camera';
+ import Minigame from './renderer/minigame';
+ import Overlays from './renderer/overlays';
++import EnvironmentController from './renderer/environment';
+ import WebGL from './renderer/webgl/webgl';
+ import Canvas from './renderer/canvas';
+ import Updater from './renderer/updater';
+@@ -43,6 +44,7 @@ export default class Game {
+ 
+     public zoning: Zoning = new Zoning();
+     public overlays: Overlays = new Overlays();
++    public environment: EnvironmentController;
+     public pathfinder: Pathfinder = new Pathfinder();
+ 
+     public info: InfoController = new InfoController();
+@@ -83,6 +85,8 @@ export default class Game {
+ 
+         this.player = new Player('', this);
+ 
++        this.environment = new EnvironmentController(this);
++
+         this.map = new Map(this);
+         this.camera = new Camera(this.map.width, this.map.height, this.map.tileSize);
+         this.sprites = new SpritesController();
+diff --git a/packages/client/src/network/connection.ts b/packages/client/src/network/connection.ts
+index 658791d..200992e 100644
+--- a/packages/client/src/network/connection.ts
++++ b/packages/client/src/network/connection.ts
+@@ -23,6 +23,7 @@ import type SpritesController from '../controllers/sprites';
+ import type Player from '../entity/character/player/player';
+ import type PointerController from '../controllers/pointer';
+ import type EntitiesController from '../controllers/entities';
++import type { EnvironmentState } from '@kaetram/common/types/environment';
+ import type { PlayerData } from '@kaetram/common/network/impl/player';
+ import type { EntityDisplayInfo } from '@kaetram/common/types/entity';
+ import type { SerializedSkills, SkillData } from '@kaetram/common/network/impl/skill';
+@@ -183,6 +184,7 @@ export default class Connection {
+         this.messages.onBattlePass(this.handleBattlePass.bind(this));
+         this.messages.onOdinSkill(this.handleOdinSkill.bind(this));
+         this.messages.onCosmo(this.handleCosmo.bind(this));
++        this.messages.onEnvironment(this.handleEnvironment.bind(this));
+     }
+ 
+     /**
+@@ -1460,6 +1462,24 @@ export default class Connection {
+         }
+     }
+ 
++    /**
++     * Sincroniza iluminação ambiente e clima nos mapas externos.
++     */
++
++    private handleEnvironment(opcode: Opcodes.Environment, info?: EnvironmentState): void {
++        switch (opcode) {
++            case Opcodes.Environment.Sync: {
++                if (info) this.game.environment.sync(info);
++                break;
++            }
++
++            case Opcodes.Environment.Remove: {
++                this.game.environment.remove();
++                break;
++            }
++        }
++    }
++
+     /**
+      * Handles camera packets such as locking the camera.
+      * @param opcode The type of action we are performing with the camera.
+diff --git a/packages/client/src/network/messages.ts b/packages/client/src/network/messages.ts
+index 46eaebf..b6f2dc3 100644
+--- a/packages/client/src/network/messages.ts
++++ b/packages/client/src/network/messages.ts
+@@ -53,7 +53,8 @@ import type {
+     UpdatePacketCallback,
+     WelcomePacketCallback,
+     OdinSkillPacketCallback,
+-    CosmoPacketCallback
++    CosmoPacketCallback,
++    EnvironmentPacketCallback
+ } from '@kaetram/common/types/messages/outgoing';
+ import type { ConnectedPacketCallback } from '@kaetram/common/network/impl/connected';
+ 
+@@ -113,6 +114,7 @@ export default class Messages {
+     private resourceCallback?: ResourcePacketCallback;
+     private odinSkillCallback?: OdinSkillPacketCallback;
+     private cosmoCallback?: CosmoPacketCallback;
++    private environmentCallback?: EnvironmentPacketCallback;
+ 
+     /**
+      * Do not clutter up the Socket class with callbacks,
+@@ -178,6 +180,7 @@ export default class Messages {
+         this.messages[Packets.BattlePass] = () => this.battlePassCallback;
+         this.messages[Packets.OdinSkill] = () => this.odinSkillCallback;
+         this.messages[Packets.Cosmo] = () => this.cosmoCallback;
++        this.messages[Packets.Environment] = () => this.environmentCallback;
+     }
+ 
+     /**
+@@ -541,4 +544,8 @@ export default class Messages {
+     public onCosmo(callback: CosmoPacketCallback): void {
+         this.cosmoCallback = callback;
+     }
++
++    public onEnvironment(callback: EnvironmentPacketCallback): void {
++        this.environmentCallback = callback;
++    }
+ }
+diff --git a/packages/client/src/renderer/environment.ts b/packages/client/src/renderer/environment.ts
+new file mode 100644
+index 0000000..336fe2e
+--- /dev/null
++++ b/packages/client/src/renderer/environment.ts
+@@ -0,0 +1,595 @@
++import { TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++import type Game from '../game';
++
++interface Tint {
++    r: number;
++    g: number;
++    b: number;
++    a: number;
++}
++
++interface SnowFlake {
++    x: number;
++    y: number;
++    speed: number;
++    size: number;
++    opacity: number;
++    drift: number;
++}
++
++interface RainDrop {
++    x: number;
++    y: number;
++    speed: number;
++    length: number;
++    opacity: number;
++    drift: number;
++    depth: number;
++    width: number;
++}
++
++interface RainSplash {
++    x: number;
++    y: number;
++    life: number;
++    maxLife: number;
++    radius: number;
++    opacity: number;
++}
++
++/** Cores de iluminação ambiente por período do dia. */
++const TIME_TINTS: Tint[] = [
++    { r: 255, g: 210, b: 140, a: 0.1 },
++    { r: 255, g: 255, b: 255, a: 0 },
++    { r: 255, g: 130, b: 60, a: 0.18 },
++    { r: 15, g: 25, b: 70, a: 0.5 }
++];
++
++const WEATHER_DARKEN: Record<WeatherType, number> = {
++    [WeatherType.Clear]: 0,
++    [WeatherType.RainDay]: 0.06,
++    [WeatherType.RainNight]: 0.1,
++    [WeatherType.FogDay]: 0.04,
++    [WeatherType.FogNight]: 0.08,
++    [WeatherType.Snow]: 0.05,
++    [WeatherType.Storm]: 0.15
++};
++
++/**
++ * Renderiza iluminação ambiente e efeitos climáticos nos mapas externos.
++ */
++export default class EnvironmentController {
++    public active = false;
++
++    private timeOfDay = TimeOfDay.Afternoon;
++    private weather = WeatherType.Clear;
++    private transition = 0;
++
++    private currentTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
++    private targetTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
++
++    private snowFlakes: SnowFlake[] = [];
++    private rainDrops: RainDrop[] = [];
++    private splashes: RainSplash[] = [];
++
++    private lightningAlpha = 0;
++    private nextLightning = 0;
++
++    private fogPulse = 0;
++    private rainMistPulse = 0;
++    private rainWind = 0;
++    private rainWindTarget = 0;
++    private nextWindShift = 0;
++
++    public constructor(private game: Game) {}
++
++    public sync(state: EnvironmentState): void {
++        let weatherChanged = this.weather !== state.weather;
++
++        this.active = true;
++        this.timeOfDay = state.timeOfDay;
++        this.weather = state.weather;
++        this.transition = state.transition;
++
++        if (weatherChanged) this.resetWeatherEffects();
++
++        this.updateTargetTint();
++        Object.assign(this.currentTint, this.targetTint);
++
++        if (weatherChanged) this.initWeatherParticles();
++    }
++
++    public remove(): void {
++        this.active = false;
++        this.resetWeatherEffects();
++        this.currentTint = { r: 0, g: 0, b: 0, a: 0 };
++        this.targetTint = { r: 0, g: 0, b: 0, a: 0 };
++    }
++
++    private resetWeatherEffects(): void {
++        this.snowFlakes = [];
++        this.rainDrops = [];
++        this.splashes = [];
++        this.lightningAlpha = 0;
++        this.nextLightning = 0;
++        this.fogPulse = 0;
++        this.rainMistPulse = 0;
++        this.rainWind = 0;
++        this.rainWindTarget = 0;
++        this.nextWindShift = 0;
++    }
++
++    private isRainWeather(): boolean {
++        return (
++            this.weather === WeatherType.RainDay ||
++            this.weather === WeatherType.RainNight ||
++            this.weather === WeatherType.Storm
++        );
++    }
++
++    private isNightRain(): boolean {
++        return this.weather === WeatherType.RainNight || this.weather === WeatherType.Storm;
++    }
++
++    private getNextTimeOfDay(): TimeOfDay {
++        return ((this.timeOfDay + 1) % 4) as TimeOfDay;
++    }
++
++    private lerpTint(from: Tint, to: Tint, t: number): Tint {
++        return {
++            r: from.r + (to.r - from.r) * t,
++            g: from.g + (to.g - from.g) * t,
++            b: from.b + (to.b - from.b) * t,
++            a: from.a + (to.a - from.a) * t
++        };
++    }
++
++    private updateTargetTint(): void {
++        let from = TIME_TINTS[this.timeOfDay],
++            to = TIME_TINTS[this.getNextTimeOfDay()],
++            base = this.lerpTint(from, to, this.transition),
++            darken = WEATHER_DARKEN[this.weather];
++
++        this.targetTint = {
++            r: base.r * (1 - darken),
++            g: base.g * (1 - darken),
++            b: base.b * (1 - darken * 0.5),
++            a: Math.min(0.75, base.a + darken)
++        };
++    }
++
++    private initWeatherParticles(): void {
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        switch (this.weather) {
++            case WeatherType.RainDay:
++            case WeatherType.RainNight:
++                this.initRain(canvasWidth, canvasHeight, 520);
++                break;
++
++            case WeatherType.Storm:
++                this.initRain(canvasWidth, canvasHeight, 780);
++                break;
++
++            case WeatherType.Snow:
++                for (let i = 0; i < 250; i++)
++                    this.snowFlakes.push(this.createSnowFlake(canvasWidth, canvasHeight, true));
++                break;
++        }
++    }
++
++    private initRain(width: number, height: number, count: number): void {
++        this.rainDrops = [];
++
++        for (let i = 0; i < count; i++)
++            this.rainDrops.push(this.createRainDrop(width, height, true));
++    }
++
++    private createSnowFlake(width: number, height: number, randomY = false): SnowFlake {
++        return {
++            x: Math.random() * width,
++            y: randomY ? Math.random() * height : -10,
++            speed: 0.8 + Math.random() * 1.5,
++            size: 2 + Math.random() * 3,
++            opacity: 0.45 + Math.random() * 0.4,
++            drift: (Math.random() - 0.5) * 0.8
++        };
++    }
++
++    private createRainDrop(width: number, height: number, randomY = false): RainDrop {
++        let isStorm = this.weather === WeatherType.Storm,
++            depth = Math.random(),
++            depthFactor = 0.45 + depth * 0.55;
++
++        return {
++            x: Math.random() * width,
++            y: randomY ? Math.random() * height : -30 - Math.random() * 80,
++            speed: (7 + Math.random() * 7) * depthFactor * (isStorm ? 1.25 : 1),
++            length: (10 + Math.random() * 18) * depthFactor,
++            opacity: (0.15 + depth * 0.55) * (isStorm ? 1.1 : 1),
++            drift: (-1.8 + Math.random() * 0.6) * (isStorm ? 1.4 : 1),
++            depth,
++            width: (0.6 + depth * 1.6) * (isStorm ? 1.2 : 1)
++        };
++    }
++
++    private spawnSplash(x: number, y: number): void {
++        let isStorm = this.weather === WeatherType.Storm,
++            maxSplashes = isStorm ? 140 : 100;
++
++        if (this.splashes.length >= maxSplashes) this.splashes.shift();
++
++        this.splashes.push({
++            x,
++            y,
++            life: 0,
++            maxLife: 180 + Math.random() * 140,
++            radius: 1.2 + Math.random() * (isStorm ? 3.5 : 2.5),
++            opacity: 0.35 + Math.random() * 0.45
++        });
++    }
++
++    public update(time: number): void {
++        if (!this.active) return;
++
++        this.updateTargetTint();
++
++        let speed = 0.06;
++
++        this.currentTint.r += (this.targetTint.r - this.currentTint.r) * speed;
++        this.currentTint.g += (this.targetTint.g - this.currentTint.g) * speed;
++        this.currentTint.b += (this.targetTint.b - this.currentTint.b) * speed;
++        this.currentTint.a += (this.targetTint.a - this.currentTint.a) * speed;
++
++        this.fogPulse = Math.sin(time / 2000) * 0.5 + 0.5;
++        this.rainMistPulse = Math.sin(time / 3200) * 0.5 + 0.5;
++
++        if (this.isRainWeather()) {
++            if (time >= this.nextWindShift) {
++                this.rainWindTarget = (Math.random() - 0.5) * 2.2;
++                this.nextWindShift = time + 1800 + Math.random() * 4000;
++            }
++
++            this.rainWind += (this.rainWindTarget - this.rainWind) * 0.02;
++        }
++
++        let dt = Math.min(this.game.timeDiff || 16, 50);
++
++        this.updateSnow(dt);
++        this.updateRain(dt);
++        this.updateSplashes(dt);
++        this.updateStorm(time);
++    }
++
++    private updateSnow(dt: number): void {
++        if (!this.snowFlakes.length) return;
++
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        for (let flake of this.snowFlakes) {
++            flake.y += flake.speed * (dt / 16);
++            flake.x += flake.drift * (dt / 16);
++
++            if (flake.y > canvasHeight + 20 || flake.x < -20 || flake.x > canvasWidth + 20)
++                Object.assign(flake, this.createSnowFlake(canvasWidth, canvasHeight));
++        }
++    }
++
++    private updateRain(dt: number): void {
++        if (!this.rainDrops.length) return;
++
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        let groundY = canvasHeight - 4,
++            wind = this.rainWind;
++
++        for (let drop of this.rainDrops) {
++            let prevY = drop.y;
++
++            drop.y += drop.speed * (dt / 16);
++            drop.x += (drop.drift + wind) * (dt / 16);
++
++            let hitGround = prevY < groundY && drop.y + drop.length >= groundY;
++
++            if (hitGround) {
++                if (Math.random() < 0.72) this.spawnSplash(drop.x, groundY - Math.random() * 2);
++                Object.assign(drop, this.createRainDrop(canvasWidth, canvasHeight));
++                continue;
++            }
++
++            if (drop.y > canvasHeight + 40 || drop.x < -40 || drop.x > canvasWidth + 40)
++                Object.assign(drop, this.createRainDrop(canvasWidth, canvasHeight));
++        }
++    }
++
++    private updateSplashes(dt: number): void {
++        if (!this.splashes.length) return;
++
++        for (let i = this.splashes.length - 1; i >= 0; i--) {
++            let splash = this.splashes[i];
++
++            splash.life += dt;
++
++            if (splash.life >= splash.maxLife) this.splashes.splice(i, 1);
++        }
++    }
++
++    private updateStorm(time: number): void {
++        if (this.weather !== WeatherType.Storm) return;
++
++        if (this.lightningAlpha > 0) this.lightningAlpha = Math.max(0, this.lightningAlpha - 0.08);
++
++        if (time >= this.nextLightning && this.lightningAlpha <= 0) {
++            this.lightningAlpha = 0.35 + Math.random() * 0.35;
++            this.nextLightning = time + 3000 + Math.random() * 8000;
++            this.playThunder();
++        }
++    }
++
++    private playThunder(): void {
++        try {
++            let audioCtx = new AudioContext(),
++                buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.8, audioCtx.sampleRate),
++                data = buffer.getChannelData(0);
++
++            for (let i = 0; i < data.length; i++)
++                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.15));
++
++            let source = audioCtx.createBufferSource();
++
++            source.buffer = buffer;
++
++            let gain = audioCtx.createGain();
++
++            gain.gain.value = 0.12;
++            source.connect(gain);
++            gain.connect(audioCtx.destination);
++            source.start();
++            source.addEventListener('ended', () => audioCtx.close());
++        } catch {
++            // Audio não disponível
++        }
++    }
++
++    public render(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.active || !width || !height) return;
++
++        if (this.isRainWeather() && !this.rainDrops.length) this.initWeatherParticles();
++        if (this.weather === WeatherType.Snow && !this.snowFlakes.length)
++            this.initWeatherParticles();
++
++        let { r, g, b, a } = this.currentTint;
++
++        if (a > 0.005) {
++            context.save();
++            context.fillStyle = `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${a.toFixed(3)})`;
++            context.fillRect(0, 0, width, height);
++            context.restore();
++        }
++
++        this.drawFog(context, width, height);
++        this.drawRainMist(context, width, height);
++        this.drawWetGround(context, width, height);
++        this.drawRainLayer(context, true);
++        this.drawSplashes(context);
++        this.drawRainLayer(context, false);
++        this.drawSnow(context);
++        this.drawLightning(context, width, height);
++    }
++
++    private drawWetGround(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.isRainWeather()) return;
++
++        let isNight = this.isNightRain(),
++            bandH = height * 0.22,
++            shimmer = 0.04 + this.rainMistPulse * 0.025;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, height - bandH, 0, height);
++
++        if (isNight) {
++            gradient.addColorStop(0, 'rgba(60, 80, 110, 0)');
++            gradient.addColorStop(0.55, `rgba(90, 115, 150, ${shimmer * 0.6})`);
++            gradient.addColorStop(1, `rgba(120, 145, 180, ${shimmer})`);
++        } else {
++            gradient.addColorStop(0, 'rgba(180, 200, 220, 0)');
++            gradient.addColorStop(0.55, `rgba(200, 220, 235, ${shimmer * 0.55})`);
++            gradient.addColorStop(1, `rgba(220, 235, 250, ${shimmer * 0.9})`);
++        }
++
++        context.fillStyle = gradient;
++        context.fillRect(0, height - bandH, width, bandH);
++        context.restore();
++    }
++
++    private drawRainMist(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.isRainWeather()) return;
++
++        let isNight = this.isNightRain(),
++            alpha = (isNight ? 0.06 : 0.04) + this.rainMistPulse * 0.03;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, 0, 0, height);
++
++        gradient.addColorStop(0, `rgba(${isNight ? '120, 140, 170' : '200, 220, 240'}, ${alpha})`);
++        gradient.addColorStop(0.45, `rgba(${isNight ? '90, 110, 140' : '180, 200, 220'}, ${alpha * 0.7})`);
++        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
++
++        context.fillStyle = gradient;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++
++    private drawFog(context: CanvasRenderingContext2D, width: number, height: number): void {
++        let isFog =
++            this.weather === WeatherType.FogDay || this.weather === WeatherType.FogNight;
++
++        if (!isFog) return;
++
++        let isNight = this.weather === WeatherType.FogNight,
++            baseAlpha = isNight ? 0.35 : 0.25,
++            alpha = baseAlpha + this.fogPulse * 0.1;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, 0, 0, height);
++
++        if (isNight) {
++            gradient.addColorStop(0, `rgba(180, 190, 210, ${alpha * 0.5})`);
++            gradient.addColorStop(0.5, `rgba(140, 150, 170, ${alpha})`);
++            gradient.addColorStop(1, `rgba(100, 110, 130, ${alpha * 1.2})`);
++        } else {
++            gradient.addColorStop(0, `rgba(230, 235, 240, ${alpha * 0.4})`);
++            gradient.addColorStop(0.5, `rgba(210, 215, 220, ${alpha})`);
++            gradient.addColorStop(1, `rgba(190, 195, 200, ${alpha * 0.8})`);
++        }
++
++        context.fillStyle = gradient;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++
++    private drawRainLayer(context: CanvasRenderingContext2D, background: boolean): void {
++        if (!this.rainDrops.length) return;
++
++        let isStorm = this.weather === WeatherType.Storm,
++            isNight = this.isNightRain(),
++            drops = this.rainDrops.filter((drop) =>
++                background ? drop.depth < 0.55 : drop.depth >= 0.55
++            );
++
++        context.save();
++        context.lineCap = 'round';
++
++        for (let drop of drops) {
++            let tailX = drop.x + drop.drift * 2.5,
++                tailY = drop.y + drop.length,
++                alpha = Math.min(0.9, drop.opacity),
++                r = isNight ? 175 : 195,
++                g = isNight ? 200 : 220,
++                b = isNight ? 230 : 255;
++
++            context.lineWidth = drop.width;
++            context.globalAlpha = alpha * (background ? 0.55 : 1);
++
++            let gradient = context.createLinearGradient(drop.x, drop.y, tailX, tailY);
++
++            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
++            gradient.addColorStop(0.15, `rgba(${r}, ${g}, ${b}, ${alpha * 0.5})`);
++            gradient.addColorStop(0.85, `rgba(${r}, ${g}, ${b}, ${alpha})`);
++            gradient.addColorStop(1, `rgba(${isStorm ? 220 : 240}, ${isStorm ? 235 : 248}, 255, ${alpha * 0.35})`);
++
++            context.strokeStyle = gradient;
++            context.beginPath();
++            context.moveTo(drop.x, drop.y);
++            context.lineTo(tailX, tailY);
++            context.stroke();
++        }
++
++        context.restore();
++    }
++
++    private drawSplashes(context: CanvasRenderingContext2D): void {
++        if (!this.splashes.length) return;
++
++        let isNight = this.isNightRain();
++
++        context.save();
++
++        for (let splash of this.splashes) {
++            let progress = splash.life / splash.maxLife,
++                fade = 1 - progress,
++                expand = splash.radius * (0.4 + progress * 1.6),
++                alpha = splash.opacity * fade * fade,
++                r = isNight ? 170 : 200,
++                g = isNight ? 200 : 225,
++                b = isNight ? 235 : 255;
++
++            if (alpha <= 0.01) continue;
++
++            context.globalAlpha = alpha;
++
++            // Centro brilhante do impacto
++            context.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.85})`;
++            context.beginPath();
++            context.ellipse(splash.x, splash.y, expand * 0.25, expand * 0.12, 0, 0, Math.PI * 2);
++            context.fill();
++
++            // Anel do pingo no chão
++            context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.7})`;
++            context.lineWidth = 1.2;
++            context.beginPath();
++            context.ellipse(splash.x, splash.y, expand, expand * 0.35, 0, 0, Math.PI * 2);
++            context.stroke();
++
++            // Segundo anel mais fino
++            if (progress < 0.65) {
++                let ring2 = expand * (1.15 + progress * 0.35);
++
++                context.globalAlpha = alpha * 0.45;
++                context.lineWidth = 0.6;
++                context.beginPath();
++                context.ellipse(splash.x, splash.y, ring2, ring2 * 0.3, 0, 0, Math.PI * 2);
++                context.stroke();
++            }
++
++            // Micro-respingos verticais
++            if (progress < 0.5) {
++                let burst = (0.5 - progress) / 0.5,
++                    dropH = 2.5 + burst * 5;
++
++                context.globalAlpha = alpha * 0.9;
++                context.lineWidth = 0.9;
++                context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
++                context.beginPath();
++                context.moveTo(splash.x - expand * 0.55, splash.y);
++                context.lineTo(splash.x - expand * 0.55, splash.y - dropH);
++                context.moveTo(splash.x, splash.y);
++                context.lineTo(splash.x, splash.y - dropH * 1.15);
++                context.moveTo(splash.x + expand * 0.5, splash.y);
++                context.lineTo(splash.x + expand * 0.5, splash.y - dropH * 0.8);
++                context.stroke();
++            }
++        }
++
++        context.restore();
++    }
++
++    private drawSnow(context: CanvasRenderingContext2D): void {
++        if (!this.snowFlakes.length) return;
++
++        context.save();
++
++        for (let flake of this.snowFlakes) {
++            context.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
++            context.beginPath();
++            context.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);
++            context.fill();
++        }
++
++        context.restore();
++    }
++
++    private drawLightning(
++        context: CanvasRenderingContext2D,
++        width: number,
++        height: number
++    ): void {
++        if (this.lightningAlpha <= 0) return;
++
++        context.save();
++        context.fillStyle = `rgba(220, 230, 255, ${this.lightningAlpha})`;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++}
+diff --git a/packages/client/src/renderer/renderer.ts b/packages/client/src/renderer/renderer.ts
+index d639d37..1eb68c2 100644
+--- a/packages/client/src/renderer/renderer.ts
++++ b/packages/client/src/renderer/renderer.ts
+@@ -291,6 +291,8 @@ export default class Renderer {
+ 
+         this.drawDebugging();
+ 
++        this.drawEnvironment();
++
+         this.drawOverlays();
+ 
+         this.drawHoveringCell();
+@@ -330,6 +332,19 @@ export default class Renderer {
+         this.drawCollisions();
+     }
+ 
++    /**
++     * Desenha iluminação ambiente e clima nos mapas externos.
++     * Interiores usam o sistema de overlay existente (tochas, cavernas).
++     */
++
++    private drawEnvironment(): void {
++        this.game.environment.render(
++            this.overlayContext,
++            this.canvasWidth,
++            this.canvasHeight
++        );
++    }
++
+     /**
+      * Overlays are images drawn on top of the game. They aFOvre generally
+      * used in conjunction with the lighting system to give a shadow
+diff --git a/packages/client/src/renderer/updater.ts b/packages/client/src/renderer/updater.ts
+index d31adfb..398bc5e 100644
+--- a/packages/client/src/renderer/updater.ts
++++ b/packages/client/src/renderer/updater.ts
+@@ -32,6 +32,7 @@ export default class Updater {
+         this.updateSounds();
+         this.updateAnimatedTiles();
+         this.updateLights();
++        this.game.environment.update(this.game.time);
+         this.game.menu.getOdinSkillsBar().tickCooldowns(this.game.player.odinSkills);
+     }
+ 
+diff --git a/packages/common/network/impl/environment.ts b/packages/common/network/impl/environment.ts
+new file mode 100644
+index 0000000..d97b462
+--- /dev/null
++++ b/packages/common/network/impl/environment.ts
+@@ -0,0 +1,17 @@
++import Packet from '../packet';
++
++import { Packets } from '@kaetram/common/network';
++
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++import type { Opcodes } from '@kaetram/common/network';
++
++export type EnvironmentPacketCallback = (
++    opcode: Opcodes.Environment,
++    info?: EnvironmentState
++) => void;
++
++export default class EnvironmentPacket extends Packet {
++    public constructor(opcode: Opcodes.Environment, data?: EnvironmentState) {
++        super(Packets.Environment, opcode, data);
++    }
++}
+diff --git a/packages/common/network/impl/index.ts b/packages/common/network/impl/index.ts
+index 8ab2990..4fb365f 100644
+--- a/packages/common/network/impl/index.ts
++++ b/packages/common/network/impl/index.ts
+@@ -53,4 +53,5 @@ export { default as ResourcePacket } from './resource';
+ export { default as BattlePassPacket } from './battlepass';
+ export { default as OdinSkillPacket } from './odinSkill';
+ export { default as CosmoPacket } from './cosmo';
++export { default as EnvironmentPacket } from './environment';
+ 
+diff --git a/packages/common/network/opcodes.ts b/packages/common/network/opcodes.ts
+index 6646b80..3a6cd00 100644
+--- a/packages/common/network/opcodes.ts
++++ b/packages/common/network/opcodes.ts
+@@ -259,3 +259,8 @@ export enum Cosmo {
+     Consume
+ }
+ 
++export enum Environment {
++    Sync,
++    Remove
++}
++
+diff --git a/packages/common/network/packets.ts b/packages/common/network/packets.ts
+index a9813ca..62df60d 100644
+--- a/packages/common/network/packets.ts
++++ b/packages/common/network/packets.ts
+@@ -62,6 +62,7 @@ enum Packets {
+     BattlePass,
+     OdinSkill,
+     Cosmo,
++    Environment,
+ 
+     // Hub <-> Admin
+     AdminSync
+diff --git a/packages/common/types/environment.ts b/packages/common/types/environment.ts
+new file mode 100644
+index 0000000..dde89f3
+--- /dev/null
++++ b/packages/common/types/environment.ts
+@@ -0,0 +1,66 @@
++/** Períodos do ciclo dia/noite. */
++export enum TimeOfDay {
++    Morning = 0,
++    Afternoon = 1,
++    Evening = 2,
++    Night = 3
++}
++
++/** Tipos de clima disponíveis. */
++export enum WeatherType {
++    Clear = 0,
++    RainDay = 1,
++    RainNight = 2,
++    FogDay = 3,
++    FogNight = 4,
++    Snow = 5,
++    Storm = 6
++}
++
++/** Duração de cada período em milissegundos (tempo real). */
++export const TIME_PHASE_DURATION: Record<TimeOfDay, number> = {
++    [TimeOfDay.Morning]: 120_000,
++    [TimeOfDay.Afternoon]: 180_000,
++    [TimeOfDay.Evening]: 90_000,
++    [TimeOfDay.Night]: 150_000
++};
++
++/** Duração da transição suave entre períodos (ms). */
++export const TIME_TRANSITION_DURATION = 30_000;
++
++/** Nomes legíveis para comandos de admin. */
++export const TIME_OF_DAY_NAMES: Record<string, TimeOfDay> = {
++    morning: TimeOfDay.Morning,
++    manha: TimeOfDay.Morning,
++    afternoon: TimeOfDay.Afternoon,
++    tarde: TimeOfDay.Afternoon,
++    evening: TimeOfDay.Evening,
++    entardecer: TimeOfDay.Evening,
++    night: TimeOfDay.Night,
++    noite: TimeOfDay.Night
++};
++
++export const WEATHER_TYPE_NAMES: Record<string, WeatherType> = {
++    clear: WeatherType.Clear,
++    limpo: WeatherType.Clear,
++    none: WeatherType.Clear,
++    rain_day: WeatherType.RainDay,
++    'chuva_dia': WeatherType.RainDay,
++    rain_night: WeatherType.RainNight,
++    'chuva_noite': WeatherType.RainNight,
++    fog_day: WeatherType.FogDay,
++    'nevoa_dia': WeatherType.FogDay,
++    fog_night: WeatherType.FogNight,
++    'nevoa_noite': WeatherType.FogNight,
++    snow: WeatherType.Snow,
++    neve: WeatherType.Snow,
++    storm: WeatherType.Storm,
++    tempestade: WeatherType.Storm
++};
++
++export interface EnvironmentState {
++    timeOfDay: TimeOfDay;
++    transition: number;
++    weather: WeatherType;
++    cycleEnabled: boolean;
++}
+diff --git a/packages/common/types/map.d.ts b/packages/common/types/map.d.ts
+index 722dd84..96310ce 100644
+--- a/packages/common/types/map.d.ts
++++ b/packages/common/types/map.d.ts
+@@ -110,20 +110,31 @@ export interface ProcessedArea {
+ export type Tree = 'Oak' | 'IceOak' | 'Palm' | 'IcePalm';
+ export type Rock = 'BlueSteel';
+ 
++export interface InteriorZone {
++    x: number;
++    y: number;
++    width: number;
++    height: number;
++}
++
+ export interface ProcessedDoor {
+     x: number;
+     y: number;
+     orientation: string;
+     quest: string;
+     achievement: string;
+-    reqAchievement: string; // Achievement requirement to pass through.
++    reqAchievement: string;
+     reqQuest: string;
+     reqItem: string;
+     reqItemCount: number;
+     stage: number;
+     skill: string;
+     level: number;
+-    npc: string; // NPC to trigger chat when player can't pass through.
++    npc: string;
++    /** Porta alterna estado interior/externo ao ser usada. */
++    hasInteriorToggle?: boolean;
++    /** Estado interior após passar por esta porta. */
++    interiorState?: boolean;
+ }
+ 
+ export interface ProcessedResource {
+diff --git a/packages/common/types/messages/outgoing.d.ts b/packages/common/types/messages/outgoing.d.ts
+index aae6844..0fa1b10 100644
+--- a/packages/common/types/messages/outgoing.d.ts
++++ b/packages/common/types/messages/outgoing.d.ts
+@@ -54,4 +54,5 @@ export type { ResourcePacketCallback } from '../../network/impl/resource';
+ export type { BattlePassPacketData, BattlePassPacketCallback } from '../../network/impl/battlepass';
+ export type { OdinSkillPacketData, OdinSkillPacketCallback } from '../../network/impl/odinSkill';
+ export type { CosmoPacketData, CosmoPacketCallback } from '../../network/impl/cosmo';
++export type { EnvironmentPacketCallback } from '../../network/impl/environment';
+ 
+diff --git a/packages/server/src/controllers/commands.ts b/packages/server/src/controllers/commands.ts
+index 43bc587..8082865 100644
+--- a/packages/server/src/controllers/commands.ts
++++ b/packages/server/src/controllers/commands.ts
+@@ -1602,6 +1602,84 @@ export default class Commands {
+ 
+                 return this.player.status.addWithTimeout(effect, 60_000);
+             }
++
++            case 'settime': {
++                let period = blocks.shift();
++
++                if (!period)
++                    return this.player.notify(
++                        'Uso: /settime [morning|afternoon|evening|night|manha|tarde|entardecer|noite]'
++                    );
++
++                let time = this.world.environment.parseTimeName(period);
++
++                if (time === undefined)
++                    return this.player.notify(`Período inválido: ${period}`);
++
++                this.world.environment.setTimeOfDay(time);
++                this.player.notify(`Período definido: ${this.world.environment.getTimeLabel()}`);
++
++                return;
++            }
++
++            case 'setweather': {
++                let weatherName = blocks.shift();
++
++                if (!weatherName)
++                    return this.player.notify(
++                        'Uso: /setweather [clear|rain_day|rain_night|fog_day|fog_night|snow|storm]'
++                    );
++
++                let weather = this.world.environment.parseWeatherName(weatherName);
++
++                if (weather === undefined)
++                    return this.player.notify(`Clima inválido: ${weatherName}`);
++
++                this.world.environment.setWeather(weather);
++                this.player.notify(`Clima definido: ${this.world.environment.getWeatherLabel()}`);
++
++                return;
++            }
++
++            case 'clearweather': {
++                this.world.environment.clearWeather();
++                this.player.notify('Efeitos de clima removidos.');
++
++                return;
++            }
++
++            case 'clearenv':
++            case 'resetenv':
++            case 'limparenv': {
++                this.world.environment.reset();
++                this.player.notify(
++                    'Ambiente restaurado: Manhã, sem clima.'
++                );
++
++                return;
++            }
++
++            case 'timecycle': {
++                let state = blocks.shift();
++
++                if (!state || (state !== 'on' && state !== 'off'))
++                    return this.player.notify('Uso: /timecycle [on|off]');
++
++                this.world.environment.setCycleEnabled(state === 'on');
++                this.player.notify(
++                    `Ciclo automático dia/noite: ${state === 'on' ? 'ativado' : 'desativado'}`
++                );
++
++                return;
++            }
++
++            case 'env': {
++                this.player.notify(
++                    `Ambiente — ${this.world.environment.getTimeLabel()} | Clima: ${this.world.environment.getWeatherLabel()} | Ciclo: ${this.world.environment.cycleEnabled ? 'ON' : 'OFF'} | Local: ${this.player.isInInterior() ? 'Interior' : 'Exterior'}`
++                );
++
++                return;
++            }
+         }
+     }
+ }
+diff --git a/packages/server/src/game/entity/character/player/handler.ts b/packages/server/src/game/entity/character/player/handler.ts
+index 64879e7..a092ebb 100644
+--- a/packages/server/src/game/entity/character/player/handler.ts
++++ b/packages/server/src/game/entity/character/player/handler.ts
+@@ -304,6 +304,8 @@ export default class Handler {
+ 
+         this.player.teleport(door.x, door.y);
+ 
++        if (door.hasInteriorToggle) this.player.syncEnvironmentFromPosition();
++
+         log.debug(`[${this.player.username}] Going through door: ${door.x} - ${door.y}`);
+     }
+ 
+@@ -321,6 +323,7 @@ export default class Handler {
+ 
+         this.detectAggro();
+         this.detectAreas(x, y);
++        this.player.syncEnvironmentFromPosition();
+         this.detectEffects(x, y);
+ 
+         this.player.storeOpen = '';
+diff --git a/packages/server/src/game/entity/character/player/incoming.ts b/packages/server/src/game/entity/character/player/incoming.ts
+index 6b11d4b..0f1af70 100644
+--- a/packages/server/src/game/entity/character/player/incoming.ts
++++ b/packages/server/src/game/entity/character/player/incoming.ts
+@@ -286,6 +286,8 @@ export default class Incoming {
+ 
+         this.player.welcome();
+ 
++        this.player.updateEnvironment();
++
+         // A secondary check after the player has fully loaded in.
+         this.world.api.isPlayerOnline(this.player.username, (online: boolean) => {
+             if (online) this.player.connection.reject('loggedin');
+diff --git a/packages/server/src/game/entity/character/player/player.ts b/packages/server/src/game/entity/character/player/player.ts
+index f9c8614..3a76281 100644
+--- a/packages/server/src/game/entity/character/player/player.ts
++++ b/packages/server/src/game/entity/character/player/player.ts
+@@ -222,6 +222,8 @@ export default class Player extends Character {
+ 
+     private cameraArea: Area | undefined;
+     public overlayArea: Area | undefined;
++    /** Cache para detectar mudança interior/exterior ao se mover. */
++    public wasInInterior = false;
+ 
+     public readyTimeout!: NodeJS.Timeout | null;
+ 
+@@ -1487,9 +1489,15 @@ export default class Player extends Character {
+         if (!overlay) {
+             tempOverlay?.removePlayer(this);
+ 
+-            return this.send(new OverlayPacket(Opcodes.Overlay.Remove));
++            this.send(new OverlayPacket(Opcodes.Overlay.Remove));
++            this.updateEnvironment();
++
++            return;
+         }
+ 
++        // Interior: desativa ambiente externo (clima e ciclo dia/noite).
++        this.updateEnvironment();
++
+         // New overlay is being loaded, remove lights.
+         this.lightsLoaded = [];
+ 
+@@ -1508,6 +1516,37 @@ export default class Player extends Character {
+         if (overlay.isStatusArea()) overlay.addPlayer(this);
+     }
+ 
++    /**
++     * Interior = caverna com overlay escuro ou sala de prédio (zona do mapa).
++     */
++    public isInInterior(): boolean {
++        return (
++            !!this.overlayArea ||
++            this.world.map.isInteriorPosition(this.x, this.y)
++        );
++    }
++
++    /**
++     * Atualiza clima/dia quando o jogador muda entre interior e exterior.
++     */
++    public syncEnvironmentFromPosition(): void {
++        let inInterior = this.isInInterior();
++
++        if (inInterior === this.wasInInterior) return;
++
++        this.updateEnvironment();
++    }
++
++    /**
++     * Sincroniza ou remove efeitos ambientais conforme o jogador está em exterior ou interior.
++     */
++    public updateEnvironment(): void {
++        this.wasInInterior = this.isInInterior();
++
++        if (this.isInInterior()) this.world.environment.removeFromPlayer(this);
++        else this.world.environment.syncPlayer(this);
++    }
++
+     /**
+      * Detects a camera region and sends a packet to the client.
+      * @param camera Camera area containing camera data or an undefined object.
+diff --git a/packages/server/src/game/environment/environment.ts b/packages/server/src/game/environment/environment.ts
+new file mode 100644
+index 0000000..b6d712a
+--- /dev/null
++++ b/packages/server/src/game/environment/environment.ts
+@@ -0,0 +1,203 @@
++import {
++    TIME_OF_DAY_NAMES,
++    TIME_PHASE_DURATION,
++    TIME_TRANSITION_DURATION,
++    TimeOfDay,
++    WeatherType,
++    WEATHER_TYPE_NAMES
++} from '@kaetram/common/types/environment';
++import { EnvironmentPacket } from '@kaetram/common/network/impl';
++import { Opcodes } from '@kaetram/common/network';
++
++import type World from '../world';
++import type Player from '../entity/character/player/player';
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++
++const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite'];
++const WEATHER_LABELS = [
++    'Limpo',
++    'Chuva (dia)',
++    'Chuva (noite)',
++    'Névoa (dia)',
++    'Névoa (noite)',
++    'Neve',
++    'Tempestade'
++];
++
++/**
++ * Gerencia o ciclo dia/noite e o clima global do mundo.
++ * Afeta apenas jogadores em mapas externos (fora de overlay areas).
++ */
++export default class Environment {
++    public timeOfDay: TimeOfDay = TimeOfDay.Morning;
++    public weather: WeatherType = WeatherType.Clear;
++    public transition = 0;
++    public cycleEnabled = true;
++
++    private phaseElapsed = 0;
++    private lastTick = Date.now();
++    private lastSync = 0;
++
++    /** Intervalo mínimo entre sincronizações com clientes (ms). */
++    private readonly syncInterval = 2000;
++
++    public constructor(private world: World) {
++        this.startTick();
++    }
++
++    /**
++     * Avança o ciclo temporal automaticamente.
++     */
++    private startTick(): void {
++        setInterval(() => this.tick(), 1000);
++    }
++
++    private tick(): void {
++        let now = Date.now(),
++            delta = now - this.lastTick;
++
++        this.lastTick = now;
++
++        if (!this.cycleEnabled) return;
++
++        let phaseDuration = TIME_PHASE_DURATION[this.timeOfDay],
++            totalDuration = phaseDuration + TIME_TRANSITION_DURATION;
++
++        this.phaseElapsed += delta;
++
++        if (this.phaseElapsed >= phaseDuration) {
++            this.transition = Math.min(
++                1,
++                (this.phaseElapsed - phaseDuration) / TIME_TRANSITION_DURATION
++            );
++        } else {
++            this.transition = 0;
++        }
++
++        if (this.phaseElapsed >= totalDuration) {
++            this.phaseElapsed = 0;
++            this.transition = 0;
++            this.timeOfDay = this.getNextTimeOfDay();
++        }
++
++        if (now - this.lastSync >= this.syncInterval) {
++            this.lastSync = now;
++            this.syncAllExterior();
++        }
++    }
++
++    private getNextTimeOfDay(): TimeOfDay {
++        return ((this.timeOfDay + 1) % 4) as TimeOfDay;
++    }
++
++    public getState(): EnvironmentState {
++        return {
++            timeOfDay: this.timeOfDay,
++            transition: this.transition,
++            weather: this.weather,
++            cycleEnabled: this.cycleEnabled
++        };
++    }
++
++    /**
++     * Verifica se o jogador está em interior (overlay area, casas, lojas, cavernas).
++     */
++    public isPlayerExterior(player: Player): boolean {
++        return !player.isInInterior();
++    }
++
++    /**
++     * Envia o estado ambiental para um jogador em mapa externo.
++     */
++    public syncPlayer(player: Player): void {
++        if (!this.isPlayerExterior(player)) return;
++
++        player.send(new EnvironmentPacket(Opcodes.Environment.Sync, this.getState()));
++    }
++
++    /**
++     * Remove efeitos ambientais do cliente (interior).
++     */
++    public removeFromPlayer(player: Player): void {
++        player.send(new EnvironmentPacket(Opcodes.Environment.Remove));
++    }
++
++    /**
++     * Sincroniza todos os jogadores em mapas externos.
++     */
++    public syncAllExterior(): void {
++        this.world.entities.forEachPlayer((player: Player) => this.syncPlayer(player));
++    }
++
++    /**
++     * Define o período do dia manualmente.
++     */
++    public setTimeOfDay(time: TimeOfDay): void {
++        this.timeOfDay = time;
++        this.transition = 0;
++        this.phaseElapsed = 0;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Define o clima manualmente, interrompendo o clima anterior.
++     */
++    public setWeather(weather: WeatherType): void {
++        this.weather = weather;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Remove todos os efeitos de clima, mantendo o período do dia.
++     */
++    public clearWeather(): void {
++        this.weather = WeatherType.Clear;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Restaura o ambiente padrão: manhã, sem clima e sem transição.
++     */
++    public reset(): void {
++        this.timeOfDay = TimeOfDay.Morning;
++        this.weather = WeatherType.Clear;
++        this.transition = 0;
++        this.phaseElapsed = 0;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Liga/desliga o ciclo automático dia/noite.
++     */
++    public setCycleEnabled(enabled: boolean): void {
++        this.cycleEnabled = enabled;
++
++        if (enabled) {
++            this.phaseElapsed = 0;
++            this.transition = 0;
++        }
++
++        this.syncAllExterior();
++    }
++
++    public parseTimeName(name: string): TimeOfDay | undefined {
++        return TIME_OF_DAY_NAMES[name.toLowerCase()];
++    }
++
++    public parseWeatherName(name: string): WeatherType | undefined {
++        return WEATHER_TYPE_NAMES[name.toLowerCase()];
++    }
++
++    public getTimeLabel(): string {
++        let next = this.getNextTimeOfDay(),
++            label = TIME_LABELS[this.timeOfDay];
++
++        if (this.transition > 0) label += ` → ${TIME_LABELS[next]} (${Math.round(this.transition * 100)}%)`;
++
++        return label;
++    }
++
++    public getWeatherLabel(): string {
++        return WEATHER_LABELS[this.weather] || 'Desconhecido';
++    }
++}
+diff --git a/packages/server/src/game/map/map.ts b/packages/server/src/game/map/map.ts
+index 3d19042..ebc5f24 100644
+--- a/packages/server/src/game/map/map.ts
++++ b/packages/server/src/game/map/map.ts
+@@ -9,7 +9,7 @@ import { Modules } from '@kaetram/common/network';
+ import type World from '../world';
+ import type Areas from './areas/areas';
+ import type Player from '../entity/character/player/player';
+-import type { ProcessedArea, ProcessedDoor, ProcessedMap, Tile } from '@kaetram/common/types/map';
++import type { ProcessedArea, ProcessedDoor, ProcessedMap, Tile, InteriorZone } from '@kaetram/common/types/map';
+ import type Entity from '../entity/entity';
+ 
+ let map = mapData as ProcessedMap;
+@@ -34,6 +34,7 @@ export default class Map {
+     public objects: number[] = map.objects;
+     public cursors: { [tileId: number]: string } = map.cursors;
+     public doors: { [index: number]: ProcessedDoor } = {};
++    public interiorZones: InteriorZone[] = [];
+     public warps: ProcessedArea[] = map.areas.warps || [];
+     public lights: ProcessedArea[] = map.areas.lights || [];
+     public signs: ProcessedArea[] = map.areas.signs || [];
+@@ -46,8 +47,8 @@ export default class Map {
+     public constructor(public world: World) {
+         this.loadAreas();
+         this.loadDoors();
+-
+         this.regions = new Regions(this);
++        this.loadInteriorZones();
+     }
+ 
+     /**
+@@ -113,6 +114,300 @@ export default class Map {
+         }
+     }
+ 
++    /**
++     * Gera zonas interiores (casas, lojas) a partir de portas que teleportam
++     * para salas isoladas. Usa flood-fill limitado sem atravessar outras portas.
++     */
++    /** Tamanho máximo de uma sala interior (evita zonas gigantes). */
++    private readonly maxInteriorZoneSize = 55;
++    private readonly maxInteriorZoneArea = 2500;
++    private readonly maxInteriorFloodTiles = 400;
++
++    private loadInteriorZones(): void {
++        let doors = map.areas.doors,
++            doorTiles = new Set(doors.map((door) => this.coordToIndex(door.x, door.y))),
++            byId: { [id: number]: ProcessedArea } = {},
++            zones: InteriorZone[] = [];
++
++        for (let door of doors) byId[door.id] = door;
++
++        let processedPairs = new Set<string>();
++
++        for (let door of doors) {
++            if (!door.destination || door.quest || door.reqItem || door.level) continue;
++
++            let destination = byId[door.destination];
++
++            if (!destination) continue;
++
++            let pairKey =
++                door.id < destination.id
++                    ? `${door.id}:${destination.id}`
++                    : `${destination.id}:${door.id}`;
++
++            if (processedPairs.has(pairKey)) continue;
++
++            processedPairs.add(pairKey);
++
++            let distance =
++                Math.abs(destination.x - door.x) + Math.abs(destination.y - door.y);
++
++            if (distance < 50) continue;
++
++            let entranceZone = this.getInteriorZoneBounds(door.x, door.y, doorTiles),
++                destinationZone = this.getInteriorZoneBounds(
++                    destination.x,
++                    destination.y,
++                    doorTiles
++                );
++
++            this.collectInteriorZone(zones, entranceZone, destinationZone);
++
++            let sides = this.resolveInteriorDoorPair(
++                door,
++                destination,
++                entranceZone,
++                destinationZone
++            );
++
++            if (!sides) continue;
++
++            let insideIndex = this.coordToIndex(sides.insideDoor.x, sides.insideDoor.y),
++                outsideIndex = this.coordToIndex(sides.outsideDoor.x, sides.outsideDoor.y),
++                insideDoorData = this.doors[insideIndex],
++                outsideDoorData = this.doors[outsideIndex];
++
++            if (outsideDoorData) {
++                outsideDoorData.hasInteriorToggle = true;
++                outsideDoorData.interiorState = true;
++            }
++
++            if (insideDoorData) {
++                insideDoorData.hasInteriorToggle = true;
++                insideDoorData.interiorState = false;
++            }
++        }
++
++        this.interiorZones = this.dedupeInteriorZones(zones);
++    }
++
++    /**
++     * Registra apenas zonas pequenas o bastante para serem salas interiores.
++     */
++    private collectInteriorZone(
++        zones: InteriorZone[],
++        entranceZone: InteriorZone | undefined,
++        destinationZone: InteriorZone | undefined
++    ): void {
++        if (entranceZone && destinationZone) {
++            let entranceArea = entranceZone.width * entranceZone.height,
++                destinationArea = destinationZone.width * destinationZone.height;
++
++            zones.push(entranceArea <= destinationArea ? entranceZone : destinationZone);
++
++            return;
++        }
++
++        let sole = entranceZone || destinationZone;
++
++        if (!sole) return;
++
++        if (sole.width * sole.height <= this.maxInteriorZoneArea / 2) zones.push(sole);
++    }
++
++    /**
++     * Determina qual porta fica no interior e qual fica no exterior.
++     */
++    private resolveInteriorDoorPair(
++        door: ProcessedArea,
++        destination: ProcessedArea,
++        entranceZone: InteriorZone | undefined,
++        destinationZone: InteriorZone | undefined
++    ): { insideDoor: ProcessedArea; outsideDoor: ProcessedArea } | undefined {
++        if (entranceZone && destinationZone) {
++            let interiorZone =
++                    entranceZone.width * entranceZone.height <=
++                    destinationZone.width * destinationZone.height
++                        ? entranceZone
++                        : destinationZone,
++                doorInside = this.isPositionInZone(door.x, door.y, interiorZone),
++                destInside = this.isPositionInZone(destination.x, destination.y, interiorZone);
++
++            if (doorInside !== destInside)
++                return {
++                    insideDoor: doorInside ? door : destination,
++                    outsideDoor: doorInside ? destination : door
++                };
++        }
++
++        let entranceArea = entranceZone ? entranceZone.width * entranceZone.height : -1,
++            destinationArea = destinationZone ? destinationZone.width * destinationZone.height : -1,
++            smallInteriorThreshold = this.maxInteriorZoneArea / 2;
++
++        if (entranceArea < 0 && destinationArea < 0) return;
++
++        if (entranceArea >= 0 && destinationArea >= 0) {
++            if (entranceArea === destinationArea) return;
++
++            return entranceArea < destinationArea
++                ? { insideDoor: door, outsideDoor: destination }
++                : { insideDoor: destination, outsideDoor: door };
++        }
++
++        if (entranceArea >= 0)
++            return entranceArea <= smallInteriorThreshold
++                ? { insideDoor: door, outsideDoor: destination }
++                : { insideDoor: destination, outsideDoor: door };
++
++        return destinationArea! <= smallInteriorThreshold
++            ? { insideDoor: destination, outsideDoor: door }
++            : { insideDoor: door, outsideDoor: destination };
++    }
++
++    private getInteriorZoneBounds(
++        startX: number,
++        startY: number,
++        doorTiles: Set<number>
++    ): InteriorZone | undefined {
++        let starts: Position[] = [];
++
++        if (!this.isOutOfBounds(startX, startY) && !this.isColliding(startX, startY))
++            starts.push({ x: startX, y: startY });
++        else
++            for (let [dx, dy] of [
++                [0, 1],
++                [0, -1],
++                [1, 0],
++                [-1, 0]
++            ]) {
++                let nextX = startX + dx,
++                    nextY = startY + dy,
++                    index = this.coordToIndex(nextX, nextY);
++
++                if (
++                    this.isOutOfBounds(nextX, nextY) ||
++                    doorTiles.has(index) ||
++                    this.isColliding(nextX, nextY)
++                )
++                    continue;
++
++                starts.push({ x: nextX, y: nextY });
++            }
++
++        if (!starts.length) return;
++
++        let queue = [...starts],
++            visited = new Set<number>();
++
++        for (let start of starts) visited.add(this.coordToIndex(start.x, start.y));
++
++        let minX = startX,
++            maxX = startX,
++            minY = startY,
++            maxY = startY,
++            count = 0,
++            maxTiles = this.maxInteriorFloodTiles;
++
++        while (queue.length > 0 && count < maxTiles) {
++            let { x, y } = queue.shift()!;
++
++            count++;
++
++            minX = Math.min(minX, x);
++            maxX = Math.max(maxX, x);
++            minY = Math.min(minY, y);
++            maxY = Math.max(maxY, y);
++
++            for (let [dx, dy] of [
++                [0, 1],
++                [0, -1],
++                [1, 0],
++                [-1, 0]
++            ]) {
++                let nextX = x + dx,
++                    nextY = y + dy,
++                    index = this.coordToIndex(nextX, nextY);
++
++                if (
++                    this.isOutOfBounds(nextX, nextY) ||
++                    visited.has(index) ||
++                    doorTiles.has(index) ||
++                    this.isColliding(nextX, nextY)
++                )
++                    continue;
++
++                visited.add(index);
++                queue.push({ x: nextX, y: nextY });
++            }
++        }
++
++        if (count < 20) return;
++
++        let width = maxX - minX + 1,
++            height = maxY - minY + 1;
++
++        if (
++            width > this.maxInteriorZoneSize ||
++            height > this.maxInteriorZoneSize ||
++            width * height > this.maxInteriorZoneArea
++        )
++            return;
++
++        return { x: minX, y: minY, width, height };
++    }
++
++    private isPositionInZone(
++        x: number,
++        y: number,
++        zone: InteriorZone | undefined
++    ): boolean {
++        if (!zone) return false;
++
++        return (
++            x >= zone.x &&
++            y >= zone.y &&
++            x < zone.x + zone.width &&
++            y < zone.y + zone.height
++        );
++    }
++
++    /**
++     * Remove zonas duplicadas sem fundir áreas distantes (evita bloquear o mapa externo).
++     */
++    private dedupeInteriorZones(zones: InteriorZone[]): InteriorZone[] {
++        let unique: InteriorZone[] = [];
++
++        for (let zone of zones) {
++            let duplicate = unique.some(
++                (existing) =>
++                    existing.x === zone.x &&
++                    existing.y === zone.y &&
++                    existing.width === zone.width &&
++                    existing.height === zone.height
++            );
++
++            if (!duplicate) unique.push(zone);
++        }
++
++        return unique;
++    }
++
++    /**
++     * Verifica se a posição está dentro de uma zona interior (casa, loja, etc.).
++     */
++    public isInteriorPosition(x: number, y: number): boolean {
++        for (let zone of this.interiorZones)
++            if (
++                x >= zone.x &&
++                y >= zone.y &&
++                x < zone.x + zone.width &&
++                y < zone.y + zone.height
++            )
++                return true;
++
++        return false;
++    }
++
+     /**
+      * Converts a coordinate (x and y) into an array index.
+      * @returns Index position relative to a 1 dimensional array.
+diff --git a/packages/server/src/game/world.ts b/packages/server/src/game/world.ts
+index 00d1db2..8be4c49 100644
+--- a/packages/server/src/game/world.ts
++++ b/packages/server/src/game/world.ts
+@@ -12,6 +12,7 @@ import API from '../network/api';
+ import Network from '../network/network';
+ import Client from '../network/client';
+ import Events from '../controllers/events';
++import Environment from './environment/environment';
+ 
+ import config from '@kaetram/common/config';
+ import log from '@kaetram/common/util/log';
+@@ -53,6 +54,7 @@ export default class World {
+     public guilds: Guilds;
+     public client: Client;
+     public events: Events;
++    public environment: Environment;
+ 
+     public discord: Discord = new Discord(config.hubEnabled);
+ 
+@@ -77,6 +79,7 @@ export default class World {
+         this.guilds = new Guilds(this);
+         this.client = new Client(this);
+         this.events = new Events(this);
++        this.environment = new Environment(this);
+ 
+         this.discord.onMessage(this.globalMessage.bind(this));
+ 
+-- 
+2.52.0.windows.1
+

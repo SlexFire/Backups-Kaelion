@@ -1,0 +1,7 @@
+﻿ffecf69 Arquitetura multi-mapas (backup squash — net e22810c..0ec52d5)
+0ec52d5 Liberar /mapwarp para todos os jogadores durante testes
+6502b68 Fix deploy de mapas extras: sincronizar JSON para public no build e export
+3105ec9 Reapply Correção Build
+bca38f3 Reapply Arquitetura multi-mapas v1.1
+6d9a6be Reapply Arquitetura multi-mapas v1.0
+642b7cc Arquitetura multi-mapas v1.0

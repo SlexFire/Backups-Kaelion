@@ -1,0 +1,19 @@
+{
+    "defaultMap": "world",
+    "maps": {
+        "world": {
+            "displayName": "Mundo base (Kaelion)",
+            "serverFile": "map/world.json",
+            "clientFile": "map.json"
+        },
+        "mapa_teste": {
+            "displayName": "mapa_teste",
+            "serverFile": "maps/mapa_teste.json",
+            "clientFile": "mapa_teste.json",
+            "spawn": {
+                "x": 24,
+                "y": 24
+            }
+        }
+    }
+}

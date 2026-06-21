@@ -1,0 +1,1051 @@
+From 2b5b86d1b779211652507074785189a2fd917493 Mon Sep 17 00:00:00 2001
+From: SlexFire <landerfolder@yahoo.com.br>
+Date: Fri, 19 Jun 2026 18:33:07 -0300
+Subject: [PATCH 2/2] Sistema de Clima v1.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Correções pontuais e estabilidade do sistema e suas transições
+---
+ packages/client/components/game.astro         |  33 ++-
+ .../img/interface/environment/afternoon.png   | Bin 0 -> 644 bytes
+ .../img/interface/environment/clear.png       | Bin 0 -> 497 bytes
+ .../img/interface/environment/deep_night.png  | Bin 0 -> 121 bytes
+ .../img/interface/environment/evening.png     | Bin 0 -> 338 bytes
+ .../img/interface/environment/fog_day.png     | Bin 0 -> 97 bytes
+ .../img/interface/environment/fog_night.png   | Bin 0 -> 96 bytes
+ .../img/interface/environment/morning.png     | Bin 0 -> 480 bytes
+ .../img/interface/environment/night.png       | Bin 0 -> 183 bytes
+ .../img/interface/environment/rain_day.png    | Bin 0 -> 119 bytes
+ .../img/interface/environment/rain_night.png  | Bin 0 -> 119 bytes
+ .../public/img/interface/environment/snow.png | Bin 0 -> 122 bytes
+ .../img/interface/environment/storm.png       | Bin 0 -> 136 bytes
+ .../download-pixellab-environment-icons.mjs   |  61 +++++
+ .../scripts/generate-environment-icons.mjs    | 225 ++++++++++++++++++
+ packages/client/scss/game/_index.scss         |   1 +
+ .../scss/game/impl/_environment-hud.scss      | 111 +++++++++
+ packages/client/scss/game/impl/_player.scss   |   7 -
+ packages/client/src/menu/environment-hud.ts   |  93 ++++++++
+ packages/client/src/renderer/environment.ts   |  50 +++-
+ packages/common/types/environment.ts          |  18 +-
+ packages/server/src/controllers/commands.ts   |   2 +-
+ .../src/game/environment/environment.ts       |  20 +-
+ 23 files changed, 601 insertions(+), 20 deletions(-)
+ create mode 100644 packages/client/public/img/interface/environment/afternoon.png
+ create mode 100644 packages/client/public/img/interface/environment/clear.png
+ create mode 100644 packages/client/public/img/interface/environment/deep_night.png
+ create mode 100644 packages/client/public/img/interface/environment/evening.png
+ create mode 100644 packages/client/public/img/interface/environment/fog_day.png
+ create mode 100644 packages/client/public/img/interface/environment/fog_night.png
+ create mode 100644 packages/client/public/img/interface/environment/morning.png
+ create mode 100644 packages/client/public/img/interface/environment/night.png
+ create mode 100644 packages/client/public/img/interface/environment/rain_day.png
+ create mode 100644 packages/client/public/img/interface/environment/rain_night.png
+ create mode 100644 packages/client/public/img/interface/environment/snow.png
+ create mode 100644 packages/client/public/img/interface/environment/storm.png
+ create mode 100644 packages/client/scripts/download-pixellab-environment-icons.mjs
+ create mode 100644 packages/client/scripts/generate-environment-icons.mjs
+ create mode 100644 packages/client/scss/game/impl/_environment-hud.scss
+ create mode 100644 packages/client/src/menu/environment-hud.ts
+
+diff --git a/packages/client/components/game.astro b/packages/client/components/game.astro
+index 66d6f78..bbac1fb 100644
+--- a/packages/client/components/game.astro
++++ b/packages/client/components/game.astro
+@@ -79,10 +79,37 @@
+         </div>
+ 
+         <div id="player-info">
+-            <div id="health" class="safari-only">
+-                <div id="health-mask" class="health-mask-base"></div>
+-                <div class="health-text stroke"></div>
++            <div id="player-bars">
++                <div id="health" class="safari-only">
++                    <div id="health-mask" class="health-mask-base"></div>
++                    <div class="health-text stroke"></div>
++                </div>
++
++                <div id="environment-hud" class="environment-hud-hidden" aria-hidden="true">
++                    <div class="env-hud-compact">
++                        <img
++                            id="env-time-icon"
++                            class="env-hud-time-icon"
++                            src="/img/interface/environment/morning.png"
++                            alt=""
++                            width="22"
++                            height="22"
++                            draggable="false"
++                        />
++                        <span id="env-time-timer" class="env-hud-timer stroke">--:--</span>
++                        <img
++                            id="env-weather-icon"
++                            class="env-hud-weather-icon"
++                            src="/img/interface/environment/clear.png"
++                            alt=""
++                            width="22"
++                            height="22"
++                            draggable="false"
++                        />
++                    </div>
++                </div>
+             </div>
++
+             <div id="mana" class="safari-only">
+                 <div id="mana-mask"></div>
+                 <div class="mana-text stroke"></div>
+diff --git a/packages/client/public/img/interface/environment/afternoon.png b/packages/client/public/img/interface/environment/afternoon.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..876db4cbca96f945d35640db573b7f7ad42582de
+GIT binary patch
+literal 644
+zcmV-~0(<?5P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80006@Nkl<Zc%1E(
+zy>HV%7{;ITSA23z3F1rYL<JNfAt9l3A?nb9feP`_ovlnv?H|EZ2~{AW<{zL_#Zob~
+z6>650!6O|&NC<>zlr{~mW9OWgAxh)4zKfHU{3gqH_dJi^d(Q`q7%^f<M3^TL<|%4<
+z6tz6^Ycn*A4jW{0$He6IWHF-%cK8C?`EqJqEv>N#rpdGgjIG-Maez2<W9j4>#6e;n
+zbZ!OI`b5p+N2w~(H>n7wiJ8mrSKk5v>^ZM(oIoTNyTV2hVSNF7Y(wdhDuCFUfT)_V
+zpX~z7mj>twLLAIohOXUJdMLNRugwreV+g<gf<5N}%<mc~(2b>&x&D`eaw`nwpy{CY
+zt`5t#&WxQ7kyI5D^Du9&0+^6`q-sKb{SUOApxtZ|;(;Qu2xb)1NXvWRU}K811w!>T
+z!^QiJllQHBCY5lU=C=&^t?fjwR23K&@%|b>9GR=3bdEHDBa#<sJHfy~j!WaxF=Z1D
+zLp<Q&@9)S(SJd-m1LgydX&)u|B+YobIuz=__77xd*QC9s{tp;B0H9K`dl!8^=xe^W
+z>3~_0N*+L;Eg-st+~hd+cguYZJ48p_Z^}(hArzi6fU*MF*)`T67ZmE)+jNvdarQk6
+z){XX!={!t6eyIWgK+_6v`FZ<9R7&=l?TAw;*{GH|DAeIT<!F%GH*BhV`)IvDmhl(5
+z(?X?Wx0_4Cg**2E0D<vS*?a>9=ull>Ah#+1sQ^HOT)0nOrPduNK%C}>mp!+f`S{Jy
+eS|djM-~0pK_1b(S5WU|30000<MNUMnLSTZzJT0LB
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/clear.png b/packages/client/public/img/interface/environment/clear.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..efc8310e2c8e48d03f3ba45ea9b3d4f2747fb9a9
+GIT binary patch
+literal 497
+zcmV<N0S^9&P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80005FNkl<Zc%1E2
+zze@sP7=DU|AgQ(>C~{~r5bP4Na4T~$8l*|^AFzg+!pX(Omi~gUNdzeo^`e9%6)BY)
+zE@&!TnyMi}JiNXJ^TS_ven&zO_rSsX{dnK!;eDU`03AAX==fudXt`X9xJWCOBw*DO
+z*OdP&0fjRcv8)@LNy2ke&<FXo2&Uvx#6^~@#?Hhci5SzGATL;c5+?vb1ORYmI~~ov
+zkkuqcvw(Kk0xy6(j$%0j0EkBO2nGE_tB8RpMO;KW-zN2^ee(WzNI0{daArG^<wnn!
+zND8FABZI))0r}w-UyC!?@Dxxi=lkBNzt!M$m{7^=002`bMp?+0cbg{L^j4AOuNCjr
+zK4lbhRhE(z%(LPwR>H?F0RYo;hMw~jFG8wIkm@zM7Yh0Ts2h`M1f1DU_*h)=yhRQG
+zZnur@&(EG>&*x>KP$%y;St2R)?DaFGEH_9ve5GniCJ$W1D>QaGOmI3(be-bGj&(ay
+zyg0Bn^Iy;^)*|a(D-oU?2UP1anQ(1oi?+~ra0CD_Oilp+ojm}Exmy~iZ+IH#?$U}p
+nnqMr|M`q}+p$;87{w=-%=??8v-EI>S00000NkvXXu0mjfn48$~
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/deep_night.png b/packages/client/public/img/interface/environment/deep_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..5ebdbcaa811c5fd35fdd2f53ad6f1eae66ea6125
+GIT binary patch
+literal 121
+zcmeAS@N?(olHy`uVBq!ia0vp^3LwnE1|*BCs=fdz2TvErkcv5PuQ~EEDDbcxyrjU+
+z&GLVh1B*(nL3+aT%C+hJr&2RzfhvLE0n-L=#^T=azZr6ZApU{x4a_qv7=MYLpP~rj
+Nd%F6$taD0e0ss|hA)NpK
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/evening.png b/packages/client/public/img/interface/environment/evening.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e3638cedcb389a6d479a58e2e6dc96d115900fc
+GIT binary patch
+literal 338
+zcmV-Y0j>UtP)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80003QNkl<Zc%1E&
+zF^<A85JkU(1;sWLY3a6DgxCTa4uQlWXt~8+fp!mpM8geeKw?)&h&C073j~=A1q4};
+z*dEg$;a54%{P{m)D?lI+cz1-aFx%JZ)+Ch>je}P&wn#UAXyy?l;uKR7mzo0r)s(fy
+zI{+myQBB$Fm?50TWg2^FW5?rQ9RUZIX*mU8jWd-Hsbp!Tt>C!qB9a98y@dMfK(;ne
+z>#vJgTkFrVwZU=Kyzb7-p=|*ui75{O0GYZ-^5=Z-{yhLxI}7VQum(5{`h{bR#&c|c
+z+W6dk81<FO)adclCCtsE@!Y$IQ-Gqc$VR=wwMkQi^KX-W+a!kn0w_NgjxjsHJ$eYP
+ksgCy@c*Zmk2n1e=GvY#Pg%fxl#{d8T07*qoM6N<$g4QyS4FCWD
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/fog_day.png b/packages/client/public/img/interface/environment/fog_day.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b20fb2b77496e3a52a5f03ce3b0bff42779f97a
+GIT binary patch
+literal 97
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj8lEnWAr*6y6C_v{Cx{$4xbJYf
+te}M4i`%M=Wq<9wr2|h;?E;b$phATX8FDOm?@*k*&!PC{xWt~$(699r18|451
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/fog_night.png b/packages/client/public/img/interface/environment/fog_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2d2dc9a165765b57ce810f847ec6c33b3049224a
+GIT binary patch
+literal 96
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj>Ygr+Ar*6y6C_v{Cx{$ybjUcR
+tnw9h`+Ca)>v7?EU%VEV1w}TCg4Daq}d^nr&=Mzv1gQu&X%Q~loCIDYA9HamM
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/morning.png b/packages/client/public/img/interface/environment/morning.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2f9a2cfb610086606ef8aa973a92ada7d7fbb46c
+GIT binary patch
+literal 480
+zcmV<60U!Q}P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80004}Nkl<Zc%1E&
+zze>YU6vn@6l6Gj!P(_D=bP$BDzJdtZrIR2T^ab(;;_4GP6v4?&m!farDp+vwPoWh8
+zBGg9uC+Tqzs>!{%xoL6H{I+}U$@#vVbMFOma{fCk>jz!OAW@vg0RW(KMwx2rs)?Ol
+zM$FK$>V^p!U%Ks)Mp_|MHlmc&bqq=t7SlOgz}k6`T7N;dNsS|#MH~Q@-2nbUSvanr
+zNF92PNlWgByu#wPFg(7w0s!=yC9E|1i8_fL=sE^jJAJvh0+#JdJ0UdCuIp5`1Hexi
+zVZz_X(YD^;Ii}DAXTWnz(o30d=aj+Yi!dHwDC~r=17$l<Q+vPWLYj9woqxQhKOS*$
+z?i~m)R1=q&$U>w8o@0`ZVkBYQO1(+a+)*pKj-Lgt1D5Rz3mY~5T%?(ci(9sj*UM-u
+zVnEh@l}^M3<MBd`-_xUuA^^n$m?EkQH-cWXG+#vtgJ-}n0O0$9V*o%;`-IBzuL%q3
+zxM0;2#sJ{{R7)K2`lk9V5b<y~!DOHb_cr!I7CGAOx=xefe1a-eFT&ZM+MJx6KgTCf
+W5R>4XOt(M)0000<MNUMnLSTY{ncIZ`
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/night.png b/packages/client/public/img/interface/environment/night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..1cf64407b81c78c1ed38dff8fa3d6179abe7a3da
+GIT binary patch
+literal 183
+zcmeAS@N?(olHy`uVBq!ia0vp^3LwnE1|*BCs=ffJI!_nJkcv5PCmrNEpuppNx8%+L
+z`Y=t6cU!s*W{I_PRDL(hoF%}anBrbEai32_R<yF-R>w!zO8i3ZY$~yO@m1~$%br6o
+zWWF%zcXS@!^~5i5?#2(<Ou;-o;^*}iYcn2U$rAbZ{Q4oog)vKxYafg?6nz!DE>UyU
+h>WdjtEdrZZ`2*|xr8TF$e+G03gQu&X%Q~loCIBGdM(O|n
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/rain_day.png b/packages/client/public/img/interface/environment/rain_day.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d7c734d0b16617dcda1aad808871599dbc11fd48
+GIT binary patch
+literal 119
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`GjcAhSdAr*6y6C_xhrE+do{;)T!
+z_z<}v;p(~n3O;LC4Zb#?XA1hbg4Ov1)2^n5dH?@=Ci2^Hzeqc&A;HSb&R}<>$Hq%$
+Rn>x@W22WQ%mvv4FO#lmeCWHV0
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/rain_night.png b/packages/client/public/img/interface/environment/rain_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..900efd99a2d9c0bc6d6c86f1bd1aadfb8d20e3da
+GIT binary patch
+literal 119
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`GjcAhSdAr*6y6C_xhrCg4R|5s<@
+zx8uIE=kfn$gN<Sbt^he6M;D9nD008x3exiXquy%!LubKk)x`-SJTeRnEn2*GTf|i6
+Q0!?D@boFyt=akR{04OdY^#A|>
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/snow.png b/packages/client/public/img/interface/environment/snow.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..109eb08f42b0c3d21d588eb9a202ef3922e73ffa
+GIT binary patch
+literal 122
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gjj-D=#Ar*6y6C_xhrRMDT^1<G)
+z;zQ(y)cZ^SEBLHoHTc?mo+;?#3RdS6OuL%?1A%(0eFe|*Zr75}2Q?&ED;OCjKi(O&
+TCT!tbpkWN2u6{1-oD!M<5b7*H
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/storm.png b/packages/client/public/img/interface/environment/storm.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..7475ba011fd6386bc235af7d7a79d4d27b7697cf
+GIT binary patch
+literal 136
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj{+=$5Ar*6y6C_xlFqyw!@qfvK
+zgUO9Md%xEUs9j~6vF~6q<IajJOa}k{pW*0fpT}y@thtFnzCqGwqT&x8x8u&onM%4>
+j<Qd%6kzifSpv}OrIVzaP-lnt-Xf%VTtDnm{r-UW|Ljf&W
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/scripts/download-pixellab-environment-icons.mjs b/packages/client/scripts/download-pixellab-environment-icons.mjs
+new file mode 100644
+index 0000000..b4d25e6
+--- /dev/null
++++ b/packages/client/scripts/download-pixellab-environment-icons.mjs
+@@ -0,0 +1,61 @@
++/**
++ * Baixa ícones de ambiente do PixelLab quando estiverem prontos.
++ * Uso: node scripts/download-pixellab-environment-icons.mjs
++ */
++import fs from 'fs';
++import path from 'path';
++import { fileURLToPath } from 'url';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const outDir = path.join(__dirname, '../public/img/interface/environment');
++
++/** object_id → nome do arquivo */
++const JOBS = {
++    rain_day: '5486a10e-ce74-4642-ac9d-720154ee5a36',
++    rain_night: '09870ec1-00b6-4373-8443-4fea0ecc5a85',
++    fog_day: '32ef4deb-6699-4980-8901-b45c1109e557',
++    fog_night: '65a59a31-ab00-4da2-b411-8b4c66392aca',
++    snow: '7c800890-e132-45f4-b810-75c8948d0f35',
++    storm: '87c24b8d-197a-4c1a-a4d5-b1960ff51348'
++};
++
++async function download(name, objectId) {
++    let url = `https://api.pixellab.ai/mcp/map-objects/${objectId}/download`,
++        response = await fetch(url);
++
++    if (!response.ok) return false;
++
++    let buffer = Buffer.from(await response.arrayBuffer());
++
++    if (buffer.length < 200) return false;
++
++    fs.writeFileSync(path.join(outDir, `${name}.png`), buffer);
++    console.log(`OK: ${name}.png`);
++
++    return true;
++}
++
++async function main() {
++    fs.mkdirSync(outDir, { recursive: true });
++
++    let pending = { ...JOBS },
++        attempts = 0,
++        maxAttempts = 40;
++
++    while (Object.keys(pending).length && attempts < maxAttempts) {
++        for (let [name, id] of Object.entries(pending)) {
++            if (await download(name, id)) delete pending[name];
++        }
++
++        if (!Object.keys(pending).length) break;
++
++        attempts++;
++        console.log(`Aguardando ${Object.keys(pending).join(', ')}... (${attempts}/${maxAttempts})`);
++        await new Promise((r) => setTimeout(r, 15000));
++    }
++
++    if (Object.keys(pending).length)
++        console.log('Pendentes:', Object.keys(pending).join(', '));
++}
++
++main();
+diff --git a/packages/client/scripts/generate-environment-icons.mjs b/packages/client/scripts/generate-environment-icons.mjs
+new file mode 100644
+index 0000000..88ef882
+--- /dev/null
++++ b/packages/client/scripts/generate-environment-icons.mjs
+@@ -0,0 +1,225 @@
++/**
++ * Gera ícones pixel art 24x24 para a HUD de ambiente (dia/noite e clima).
++ * Uso: node scripts/generate-environment-icons.mjs
++ */
++import fs from 'fs';
++import path from 'path';
++import zlib from 'zlib';
++import { fileURLToPath } from 'url';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const outDir = path.join(__dirname, '../public/img/interface/environment');
++
++const T = 0;
++const W = 24;
++const H = 24;
++
++function createCanvas() {
++    return new Uint8ClampedArray(W * H * 4);
++}
++
++function setPixel(data, x, y, r, g, b, a = 255) {
++    if (x < 0 || y < 0 || x >= W || y >= H) return;
++
++    let i = (y * W + x) * 4;
++
++    data[i] = r;
++    data[i + 1] = g;
++    data[i + 2] = b;
++    data[i + 3] = a;
++}
++
++function fillRect(data, x, y, w, h, r, g, b, a = 255) {
++    for (let py = y; py < y + h; py++)
++        for (let px = x; px < x + w; px++) setPixel(data, px, py, r, g, b, a);
++}
++
++function drawCircle(data, cx, cy, radius, r, g, b, a = 255) {
++    for (let y = -radius; y <= radius; y++)
++        for (let x = -radius; x <= radius; x++)
++            if (x * x + y * y <= radius * radius) setPixel(data, cx + x, cy + y, r, g, b, a);
++}
++
++function drawHorizon(data, y, r, g, b) {
++    fillRect(data, 0, y, W, H - y, r, g, b);
++}
++
++const icons = {
++    morning: (data) => {
++        drawHorizon(data, 14, 255, 180, 80);
++        drawCircle(data, 12, 14, 5, 255, 220, 60);
++        fillRect(data, 0, 13, W, 2, 180, 100, 40);
++    },
++    afternoon: (data) => {
++        fillRect(data, 0, 0, W, H, 100, 180, 255);
++        drawCircle(data, 12, 8, 6, 255, 240, 50);
++        for (let i = 0; i < 8; i++) {
++            let a = (i / 8) * Math.PI * 2,
++                x = 12 + Math.round(Math.cos(a) * 9),
++                y = 8 + Math.round(Math.sin(a) * 9);
++
++            setPixel(data, x, y, 255, 240, 80);
++            setPixel(data, x + 1, y, 255, 240, 80);
++        }
++    },
++    evening: (data) => {
++        drawHorizon(data, 14, 200, 80, 60);
++        fillRect(data, 0, 0, W, 14, 120, 50, 80);
++        drawCircle(data, 12, 14, 5, 255, 120, 40);
++        fillRect(data, 0, 13, W, 2, 140, 60, 30);
++    },
++    night: (data) => {
++        fillRect(data, 0, 0, W, H, 20, 30, 70);
++        drawCircle(data, 14, 8, 5, 240, 240, 200);
++        fillRect(data, 8, 6, 8, 10, T, T, T);
++        setPixel(data, 5, 5, 255, 255, 200);
++        setPixel(data, 18, 12, 255, 255, 200);
++        setPixel(data, 8, 16, 255, 255, 200);
++    },
++    deep_night: (data) => {
++        for (let y = 4; y < 14; y++)
++            for (let x = 10; x < 18; x++) {
++                let dx = x - 14,
++                    dy = y - 9;
++
++                if (dx * dx + dy * dy <= 18 && x < 15) setPixel(data, x, y, 55, 60, 85);
++            }
++
++        setPixel(data, 6, 6, 90, 95, 120);
++        setPixel(data, 18, 13, 75, 80, 105);
++        setPixel(data, 9, 17, 65, 70, 95);
++    },
++    clear: (data) => {
++        drawCircle(data, 8, 8, 4, 255, 230, 60);
++        fillRect(data, 10, 10, 12, 6, 220, 220, 230);
++        fillRect(data, 12, 8, 10, 4, 200, 200, 210);
++    },
++    rain_day: (data) => {
++        fillRect(data, 5, 6, 14, 7, 160, 170, 185);
++        fillRect(data, 7, 4, 10, 4, 180, 185, 195);
++        for (let x = 8; x < 18; x += 3) {
++            setPixel(data, x, 14, 80, 140, 255);
++            setPixel(data, x, 15, 80, 140, 255);
++            setPixel(data, x + 1, 16, 80, 140, 255);
++        }
++    },
++    rain_night: (data) => {
++        fillRect(data, 5, 6, 14, 7, 70, 75, 95);
++        fillRect(data, 7, 4, 10, 4, 90, 95, 115);
++        for (let x = 8; x < 18; x += 3) {
++            setPixel(data, x, 14, 100, 120, 200);
++            setPixel(data, x, 15, 100, 120, 200);
++            setPixel(data, x + 1, 16, 100, 120, 200);
++        }
++    },
++    fog_day: (data) => {
++        for (let y of [8, 11, 14, 17])
++            fillRect(data, 2, y, 20, 2, 190, 195, 205, 200);
++    },
++    fog_night: (data) => {
++        for (let y of [8, 11, 14, 17])
++            fillRect(data, 2, y, 20, 2, 80, 85, 100, 210);
++    },
++    snow: (data) => {
++        fillRect(data, 5, 6, 14, 7, 180, 190, 210);
++        fillRect(data, 7, 4, 10, 4, 200, 210, 225);
++        for (let x = 7; x < 18; x += 4) {
++            setPixel(data, x, 15, 255, 255, 255);
++            setPixel(data, x + 1, 14, 255, 255, 255);
++            setPixel(data, x, 17, 255, 255, 255);
++            setPixel(data, x + 2, 16, 255, 255, 255);
++        }
++    },
++    storm: (data) => {
++        fillRect(data, 4, 5, 16, 8, 55, 60, 75);
++        fillRect(data, 6, 3, 12, 4, 70, 75, 90);
++        fillRect(data, 11, 12, 2, 6, 255, 230, 50);
++        fillRect(data, 9, 14, 6, 2, 255, 230, 50);
++        fillRect(data, 13, 10, 2, 3, 255, 230, 50);
++    }
++};
++
++function crc32(buf) {
++    let crc = -1;
++
++    for (let i = 0; i < buf.length; i++) {
++        crc ^= buf[i];
++
++        for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
++    }
++
++    return (crc ^ -1) >>> 0;
++}
++
++function chunk(type, data) {
++    let typeBuf = Buffer.from(type),
++        len = Buffer.alloc(4);
++
++    len.writeUInt32BE(data.length);
++
++    let crcBuf = Buffer.alloc(4),
++        crc = crc32(Buffer.concat([typeBuf, data]));
++
++    crcBuf.writeUInt32BE(crc);
++
++    return Buffer.concat([len, typeBuf, data, crcBuf]);
++}
++
++function encodePng(rgba) {
++    let signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
++        ihdr = Buffer.alloc(13);
++
++    ihdr.writeUInt32BE(W, 0);
++    ihdr.writeUInt32BE(H, 4);
++    ihdr[8] = 8;
++    ihdr[9] = 6;
++
++    let stride = 1 + W * 4,
++        raw = Buffer.alloc(stride * H);
++
++    for (let y = 0; y < H; y++) {
++        raw[y * stride] = 0;
++
++        for (let x = 0; x < W; x++) {
++            let si = (y * W + x) * 4,
++                di = y * stride + 1 + x * 4;
++
++            raw[di] = rgba[si];
++            raw[di + 1] = rgba[si + 1];
++            raw[di + 2] = rgba[si + 2];
++            raw[di + 3] = rgba[si + 3];
++        }
++    }
++
++    return Buffer.concat([
++        signature,
++        chunk('IHDR', ihdr),
++        chunk('IDAT', zlib.deflateSync(raw)),
++        chunk('IEND', Buffer.alloc(0))
++    ]);
++}
++
++fs.mkdirSync(outDir, { recursive: true });
++
++/** Ícones já gerados pelo PixelLab — não sobrescrever. */
++const pixellabIcons = new Set([
++    'morning',
++    'afternoon',
++    'evening',
++    'night',
++    'deep_night',
++    'clear'
++]);
++
++for (let [name, draw] of Object.entries(icons)) {
++    if (pixellabIcons.has(name)) {
++        console.log(`Ignorado (PixelLab): ${name}.png`);
++        continue;
++    }
++    let data = createCanvas();
++
++    draw(data);
++
++    fs.writeFileSync(path.join(outDir, `${name}.png`), encodePng(data));
++    console.log(`Gerado: ${name}.png`);
++}
+diff --git a/packages/client/scss/game/_index.scss b/packages/client/scss/game/_index.scss
+index 48f7d69..ee6a555 100644
+--- a/packages/client/scss/game/_index.scss
++++ b/packages/client/scss/game/_index.scss
+@@ -27,6 +27,7 @@
+ @use 'impl/notifications';
+ @use 'impl/page';
+ @use 'impl/player';
++@use 'impl/environment-hud';
+ @use 'impl/profile';
+ @use 'impl/quests';
+ @use 'impl/settings';
+diff --git a/packages/client/scss/game/impl/_environment-hud.scss b/packages/client/scss/game/impl/_environment-hud.scss
+new file mode 100644
+index 0000000..22d81d4
+--- /dev/null
++++ b/packages/client/scss/game/impl/_environment-hud.scss
+@@ -0,0 +1,111 @@
++@use '../../abstracts/media';
++
++#player-info {
++    position: absolute;
++    top: 0;
++    left: 0;
++    z-index: 10;
++    pointer-events: none;
++    user-select: none;
++}
++
++#player-bars {
++    position: absolute;
++    top: 0.5em;
++    left: 1em;
++    display: flex;
++    flex-flow: row nowrap;
++    align-items: center;
++    gap: 0.32em;
++}
++
++#health {
++    position: relative;
++    top: auto;
++    left: auto;
++    flex: 0 0 auto;
++}
++
++#environment-hud {
++    position: relative;
++    flex: 0 0 auto;
++}
++
++#environment-hud.environment-hud-hidden {
++    display: none;
++}
++
++.env-hud-compact {
++    display: flex;
++    flex-flow: row nowrap;
++    align-items: center;
++    gap: 0.28em;
++
++    height: 2.4em;
++    padding: 0 0.38em;
++
++    background: rgb(0 0 0 / 28%);
++    border: 1px solid rgb(255 255 255 / 10%);
++    border-radius: 2px;
++    box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
++
++    pointer-events: none;
++    cursor: none;
++}
++
++.env-hud-time-icon,
++.env-hud-weather-icon {
++    width: 1.35em;
++    height: 1.35em;
++    image-rendering: pixelated;
++    flex-shrink: 0;
++    pointer-events: none;
++}
++
++.env-hud-timer {
++    min-width: 2.15em;
++
++    font-size: 0.78em;
++    font-weight: 600;
++    color: rgb(255 255 255 / 90%);
++    text-align: center;
++    letter-spacing: 0.03em;
++    line-height: 1;
++    white-space: nowrap;
++    pointer-events: none;
++}
++
++@media (--lg) {
++    #player-bars {
++        gap: 0.26em;
++    }
++
++    #health {
++        font-size: 0.85em;
++    }
++
++    .env-hud-compact {
++        height: 2.1em;
++        padding: 0 0.32em;
++        gap: 0.22em;
++    }
++
++    .env-hud-time-icon,
++    .env-hud-weather-icon {
++        width: 1.2em;
++        height: 1.2em;
++    }
++
++    .env-hud-timer {
++        font-size: 0.7em;
++        min-width: 1.95em;
++    }
++}
++
++_::-webkit-full-page-media,
++_:future,
++:root .safari_only {
++    #player-bars {
++        left: 2.5em;
++    }
++}
+diff --git a/packages/client/scss/game/impl/_player.scss b/packages/client/scss/game/impl/_player.scss
+index 4ce3308..fa5df50 100644
+--- a/packages/client/scss/game/impl/_player.scss
++++ b/packages/client/scss/game/impl/_player.scss
+@@ -10,11 +10,6 @@
+     position: absolute;
+ }
+ 
+-#health {
+-    top: 0.5em;
+-    left: 1em;
+-}
+-
+ #mana {
+     top: 3.25em;
+     left: 1em;
+@@ -72,7 +67,6 @@
+ _::-webkit-full-page-media,
+ _:future,
+ :root .safari_only {
+-    #health,
+     #mana {
+         left: 2.5em !important;
+     }
+@@ -83,7 +77,6 @@ _:future,
+ }
+ 
+ @media (--lg) {
+-    #health,
+     #mana {
+         font-size: 0.85em;
+     }
+diff --git a/packages/client/src/menu/environment-hud.ts b/packages/client/src/menu/environment-hud.ts
+new file mode 100644
+index 0000000..1e1489e
+--- /dev/null
++++ b/packages/client/src/menu/environment-hud.ts
+@@ -0,0 +1,93 @@
++import { TIME_OF_DAY_COUNT, TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++
++import type EnvironmentController from '../renderer/environment';
++
++const TIME_ICON_FILES = ['morning', 'afternoon', 'evening', 'night', 'deep_night'];
++
++const WEATHER_ICON_FILES = [
++    'clear',
++    'rain_day',
++    'rain_night',
++    'fog_day',
++    'fog_night',
++    'snow',
++    'storm'
++];
++
++const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite', 'Alta Madrugada'];
++const WEATHER_LABELS = [
++    'Limpo',
++    'Chuva',
++    'Chuva noturna',
++    'Névoa',
++    'Névoa noturna',
++    'Neve',
++    'Tempestade'
++];
++
++const ICON_BASE = '/img/interface/environment';
++
++/**
++ * HUD ao lado da barra de HP: fase do dia, clima e contagem regressiva.
++ */
++export default class EnvironmentHud {
++    private container: HTMLElement = document.querySelector('#environment-hud')!;
++    private bar: HTMLElement = document.querySelector('.env-hud-compact')!;
++    private timeIcon: HTMLImageElement = document.querySelector('#env-time-icon')!;
++    private weatherIcon: HTMLImageElement = document.querySelector('#env-weather-icon')!;
++    private timer: HTMLElement = document.querySelector('#env-time-timer')!;
++
++    private lastTimeIcon = '';
++    private lastWeatherIcon = '';
++
++    public update(environment: EnvironmentController): void {
++        if (!environment.isHudVisible()) {
++            this.container.classList.add('environment-hud-hidden');
++            this.container.setAttribute('aria-hidden', 'true');
++            return;
++        }
++
++        this.container.classList.remove('environment-hud-hidden');
++        this.container.setAttribute('aria-hidden', 'false');
++
++        let timeOfDay = environment.getTimeOfDay(),
++            weather = environment.getWeather(),
++            timeFile = TIME_ICON_FILES[timeOfDay],
++            weatherFile = WEATHER_ICON_FILES[weather];
++
++        if (timeFile !== this.lastTimeIcon) {
++            this.timeIcon.src = `${ICON_BASE}/${timeFile}.png?v=5`;
++            this.lastTimeIcon = timeFile;
++        }
++
++        if (weatherFile !== this.lastWeatherIcon) {
++            this.weatherIcon.src = `${ICON_BASE}/${weatherFile}.png?v=4`;
++            this.lastWeatherIcon = weatherFile;
++        }
++
++        let nextPhase = ((timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay,
++            inTransition = environment.getTransition() > 0,
++            phaseLabel = TIME_LABELS[timeOfDay],
++            nextLabel = TIME_LABELS[nextPhase],
++            weatherLabel = WEATHER_LABELS[weather],
++            remaining = environment.getPhaseRemaining();
++
++        this.timer.textContent = this.formatRemaining(remaining, environment.isCycleEnabled());
++
++        let tip = inTransition
++            ? `${phaseLabel} → ${nextLabel} (${Math.round(environment.getTransition() * 100)}%) · ${weatherLabel}`
++            : `${phaseLabel} · próxima: ${nextLabel} · ${weatherLabel}`;
++
++        this.bar.setAttribute('aria-label', tip);
++    }
++
++    private formatRemaining(remaining: number, cycleEnabled: boolean): string {
++        if (!cycleEnabled || remaining < 0) return '—';
++
++        let totalSeconds = Math.ceil(remaining / 1000),
++            minutes = Math.floor(totalSeconds / 60),
++            seconds = totalSeconds % 60;
++
++        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
++    }
++}
+diff --git a/packages/client/src/renderer/environment.ts b/packages/client/src/renderer/environment.ts
+index 336fe2e..74c2039 100644
+--- a/packages/client/src/renderer/environment.ts
++++ b/packages/client/src/renderer/environment.ts
+@@ -1,4 +1,6 @@
+-import { TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++import { TIME_OF_DAY_COUNT, TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++
++import EnvironmentHud from '../menu/environment-hud';
+ 
+ import type { EnvironmentState } from '@kaetram/common/types/environment';
+ import type Game from '../game';
+@@ -44,7 +46,8 @@ const TIME_TINTS: Tint[] = [
+     { r: 255, g: 210, b: 140, a: 0.1 },
+     { r: 255, g: 255, b: 255, a: 0 },
+     { r: 255, g: 130, b: 60, a: 0.18 },
+-    { r: 15, g: 25, b: 70, a: 0.5 }
++    { r: 15, g: 25, b: 70, a: 0.5 },
++    { r: 4, g: 8, b: 28, a: 0.72 }
+ ];
+ 
+ const WEATHER_DARKEN: Record<WeatherType, number> = {
+@@ -66,6 +69,10 @@ export default class EnvironmentController {
+     private timeOfDay = TimeOfDay.Afternoon;
+     private weather = WeatherType.Clear;
+     private transition = 0;
++    private cycleEnabled = true;
++    private phaseRemaining = -1;
++
++    private hud = new EnvironmentHud();
+ 
+     private currentTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
+     private targetTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
+@@ -92,6 +99,8 @@ export default class EnvironmentController {
+         this.timeOfDay = state.timeOfDay;
+         this.weather = state.weather;
+         this.transition = state.transition;
++        this.cycleEnabled = state.cycleEnabled;
++        this.phaseRemaining = state.phaseRemaining;
+ 
+         if (weatherChanged) this.resetWeatherEffects();
+ 
+@@ -99,6 +108,8 @@ export default class EnvironmentController {
+         Object.assign(this.currentTint, this.targetTint);
+ 
+         if (weatherChanged) this.initWeatherParticles();
++
++        this.hud.update(this);
+     }
+ 
+     public remove(): void {
+@@ -106,6 +117,31 @@ export default class EnvironmentController {
+         this.resetWeatherEffects();
+         this.currentTint = { r: 0, g: 0, b: 0, a: 0 };
+         this.targetTint = { r: 0, g: 0, b: 0, a: 0 };
++        this.hud.update(this);
++    }
++
++    public isHudVisible(): boolean {
++        return this.active;
++    }
++
++    public getTimeOfDay(): TimeOfDay {
++        return this.timeOfDay;
++    }
++
++    public getWeather(): WeatherType {
++        return this.weather;
++    }
++
++    public getTransition(): number {
++        return this.transition;
++    }
++
++    public getPhaseRemaining(): number {
++        return this.phaseRemaining;
++    }
++
++    public isCycleEnabled(): boolean {
++        return this.cycleEnabled;
+     }
+ 
+     private resetWeatherEffects(): void {
+@@ -134,7 +170,7 @@ export default class EnvironmentController {
+     }
+ 
+     private getNextTimeOfDay(): TimeOfDay {
+-        return ((this.timeOfDay + 1) % 4) as TimeOfDay;
++        return ((this.timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay;
+     }
+ 
+     private lerpTint(from: Tint, to: Tint, t: number): Tint {
+@@ -263,6 +299,14 @@ export default class EnvironmentController {
+         this.updateRain(dt);
+         this.updateSplashes(dt);
+         this.updateStorm(time);
++        this.tickPhaseRemaining(dt);
++        this.hud.update(this);
++    }
++
++    private tickPhaseRemaining(dt: number): void {
++        if (!this.active || !this.cycleEnabled || this.phaseRemaining < 0) return;
++
++        this.phaseRemaining = Math.max(0, this.phaseRemaining - dt);
+     }
+ 
+     private updateSnow(dt: number): void {
+diff --git a/packages/common/types/environment.ts b/packages/common/types/environment.ts
+index dde89f3..d02bbdb 100644
+--- a/packages/common/types/environment.ts
++++ b/packages/common/types/environment.ts
+@@ -3,9 +3,13 @@ export enum TimeOfDay {
+     Morning = 0,
+     Afternoon = 1,
+     Evening = 2,
+-    Night = 3
++    Night = 3,
++    DeepNight = 4
+ }
+ 
++/** Quantidade de fases no ciclo (Manhã → … → Alta Madrugada → Manhã). */
++export const TIME_OF_DAY_COUNT = 5;
++
+ /** Tipos de clima disponíveis. */
+ export enum WeatherType {
+     Clear = 0,
+@@ -22,7 +26,8 @@ export const TIME_PHASE_DURATION: Record<TimeOfDay, number> = {
+     [TimeOfDay.Morning]: 120_000,
+     [TimeOfDay.Afternoon]: 180_000,
+     [TimeOfDay.Evening]: 90_000,
+-    [TimeOfDay.Night]: 150_000
++    [TimeOfDay.Night]: 150_000,
++    [TimeOfDay.DeepNight]: 90_000
+ };
+ 
+ /** Duração da transição suave entre períodos (ms). */
+@@ -37,7 +42,12 @@ export const TIME_OF_DAY_NAMES: Record<string, TimeOfDay> = {
+     evening: TimeOfDay.Evening,
+     entardecer: TimeOfDay.Evening,
+     night: TimeOfDay.Night,
+-    noite: TimeOfDay.Night
++    noite: TimeOfDay.Night,
++    deep_night: TimeOfDay.DeepNight,
++    deepnight: TimeOfDay.DeepNight,
++    alta_madrugada: TimeOfDay.DeepNight,
++    madrugada: TimeOfDay.DeepNight,
++    latenight: TimeOfDay.DeepNight
+ };
+ 
+ export const WEATHER_TYPE_NAMES: Record<string, WeatherType> = {
+@@ -63,4 +73,6 @@ export interface EnvironmentState {
+     transition: number;
+     weather: WeatherType;
+     cycleEnabled: boolean;
++    /** Milissegundos até a próxima fase (ou fim da transição). -1 se ciclo desligado. */
++    phaseRemaining: number;
+ }
+diff --git a/packages/server/src/controllers/commands.ts b/packages/server/src/controllers/commands.ts
+index 8082865..ff79ca4 100644
+--- a/packages/server/src/controllers/commands.ts
++++ b/packages/server/src/controllers/commands.ts
+@@ -1608,7 +1608,7 @@ export default class Commands {
+ 
+                 if (!period)
+                     return this.player.notify(
+-                        'Uso: /settime [morning|afternoon|evening|night|manha|tarde|entardecer|noite]'
++                        'Uso: /settime [morning|afternoon|evening|night|deep_night|manha|tarde|entardecer|noite|madrugada]'
+                     );
+ 
+                 let time = this.world.environment.parseTimeName(period);
+diff --git a/packages/server/src/game/environment/environment.ts b/packages/server/src/game/environment/environment.ts
+index b6d712a..6c11dee 100644
+--- a/packages/server/src/game/environment/environment.ts
++++ b/packages/server/src/game/environment/environment.ts
+@@ -1,4 +1,5 @@
+ import {
++    TIME_OF_DAY_COUNT,
+     TIME_OF_DAY_NAMES,
+     TIME_PHASE_DURATION,
+     TIME_TRANSITION_DURATION,
+@@ -13,7 +14,7 @@ import type World from '../world';
+ import type Player from '../entity/character/player/player';
+ import type { EnvironmentState } from '@kaetram/common/types/environment';
+ 
+-const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite'];
++const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite', 'Alta Madrugada'];
+ const WEATHER_LABELS = [
+     'Limpo',
+     'Chuva (dia)',
+@@ -87,7 +88,7 @@ export default class Environment {
+     }
+ 
+     private getNextTimeOfDay(): TimeOfDay {
+-        return ((this.timeOfDay + 1) % 4) as TimeOfDay;
++        return ((this.timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay;
+     }
+ 
+     public getState(): EnvironmentState {
+@@ -95,10 +96,23 @@ export default class Environment {
+             timeOfDay: this.timeOfDay,
+             transition: this.transition,
+             weather: this.weather,
+-            cycleEnabled: this.cycleEnabled
++            cycleEnabled: this.cycleEnabled,
++            phaseRemaining: this.getPhaseRemaining()
+         };
+     }
+ 
++    /**
++     * Tempo restante até a próxima fase do dia (ms). -1 quando o ciclo está pausado.
++     */
++    public getPhaseRemaining(): number {
++        if (!this.cycleEnabled) return -1;
++
++        let phaseDuration = TIME_PHASE_DURATION[this.timeOfDay],
++            totalDuration = phaseDuration + TIME_TRANSITION_DURATION;
++
++        return Math.max(0, totalDuration - this.phaseElapsed);
++    }
++
+     /**
+      * Verifica se o jogador está em interior (overlay area, casas, lojas, cavernas).
+      */
+-- 
+2.52.0.windows.1
+

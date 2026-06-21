@@ -1,0 +1,111 @@
+@use '../../abstracts/media';
+
+#player-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    pointer-events: none;
+    user-select: none;
+}
+
+#player-bars {
+    position: absolute;
+    top: 0.5em;
+    left: 1em;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 0.32em;
+}
+
+#health {
+    position: relative;
+    top: auto;
+    left: auto;
+    flex: 0 0 auto;
+}
+
+#environment-hud {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+#environment-hud.environment-hud-hidden {
+    display: none;
+}
+
+.env-hud-compact {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 0.28em;
+
+    height: 2.4em;
+    padding: 0 0.38em;
+
+    background: rgb(0 0 0 / 28%);
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: 2px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
+
+    pointer-events: none;
+    cursor: none;
+}
+
+.env-hud-time-icon,
+.env-hud-weather-icon {
+    width: 1.35em;
+    height: 1.35em;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.env-hud-timer {
+    min-width: 2.15em;
+
+    font-size: 0.78em;
+    font-weight: 600;
+    color: rgb(255 255 255 / 90%);
+    text-align: center;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+@media (--lg) {
+    #player-bars {
+        gap: 0.26em;
+    }
+
+    #health {
+        font-size: 0.85em;
+    }
+
+    .env-hud-compact {
+        height: 2.1em;
+        padding: 0 0.32em;
+        gap: 0.22em;
+    }
+
+    .env-hud-time-icon,
+    .env-hud-weather-icon {
+        width: 1.2em;
+        height: 1.2em;
+    }
+
+    .env-hud-timer {
+        font-size: 0.7em;
+        min-width: 1.95em;
+    }
+}
+
+_::-webkit-full-page-media,
+_:future,
+:root .safari_only {
+    #player-bars {
+        left: 2.5em;
+    }
+}

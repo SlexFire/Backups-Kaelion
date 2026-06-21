@@ -1,0 +1,2541 @@
+diff --git a/packages/client/components/game.astro b/packages/client/components/game.astro
+index 66d6f78..bbac1fb 100644
+--- a/packages/client/components/game.astro
++++ b/packages/client/components/game.astro
+@@ -79,10 +79,37 @@
+         </div>
+ 
+         <div id="player-info">
+-            <div id="health" class="safari-only">
+-                <div id="health-mask" class="health-mask-base"></div>
+-                <div class="health-text stroke"></div>
++            <div id="player-bars">
++                <div id="health" class="safari-only">
++                    <div id="health-mask" class="health-mask-base"></div>
++                    <div class="health-text stroke"></div>
++                </div>
++
++                <div id="environment-hud" class="environment-hud-hidden" aria-hidden="true">
++                    <div class="env-hud-compact">
++                        <img
++                            id="env-time-icon"
++                            class="env-hud-time-icon"
++                            src="/img/interface/environment/morning.png"
++                            alt=""
++                            width="22"
++                            height="22"
++                            draggable="false"
++                        />
++                        <span id="env-time-timer" class="env-hud-timer stroke">--:--</span>
++                        <img
++                            id="env-weather-icon"
++                            class="env-hud-weather-icon"
++                            src="/img/interface/environment/clear.png"
++                            alt=""
++                            width="22"
++                            height="22"
++                            draggable="false"
++                        />
++                    </div>
++                </div>
+             </div>
++
+             <div id="mana" class="safari-only">
+                 <div id="mana-mask"></div>
+                 <div class="mana-text stroke"></div>
+diff --git a/packages/client/public/img/interface/environment/afternoon.png b/packages/client/public/img/interface/environment/afternoon.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..876db4cbca96f945d35640db573b7f7ad42582de
+GIT binary patch
+literal 644
+zcmV-~0(<?5P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80006@Nkl<Zc%1E(
+zy>HV%7{;ITSA23z3F1rYL<JNfAt9l3A?nb9feP`_ovlnv?H|EZ2~{AW<{zL_#Zob~
+z6>650!6O|&NC<>zlr{~mW9OWgAxh)4zKfHU{3gqH_dJi^d(Q`q7%^f<M3^TL<|%4<
+z6tz6^Ycn*A4jW{0$He6IWHF-%cK8C?`EqJqEv>N#rpdGgjIG-Maez2<W9j4>#6e;n
+zbZ!OI`b5p+N2w~(H>n7wiJ8mrSKk5v>^ZM(oIoTNyTV2hVSNF7Y(wdhDuCFUfT)_V
+zpX~z7mj>twLLAIohOXUJdMLNRugwreV+g<gf<5N}%<mc~(2b>&x&D`eaw`nwpy{CY
+zt`5t#&WxQ7kyI5D^Du9&0+^6`q-sKb{SUOApxtZ|;(;Qu2xb)1NXvWRU}K811w!>T
+z!^QiJllQHBCY5lU=C=&^t?fjwR23K&@%|b>9GR=3bdEHDBa#<sJHfy~j!WaxF=Z1D
+zLp<Q&@9)S(SJd-m1LgydX&)u|B+YobIuz=__77xd*QC9s{tp;B0H9K`dl!8^=xe^W
+z>3~_0N*+L;Eg-st+~hd+cguYZJ48p_Z^}(hArzi6fU*MF*)`T67ZmE)+jNvdarQk6
+z){XX!={!t6eyIWgK+_6v`FZ<9R7&=l?TAw;*{GH|DAeIT<!F%GH*BhV`)IvDmhl(5
+z(?X?Wx0_4Cg**2E0D<vS*?a>9=ull>Ah#+1sQ^HOT)0nOrPduNK%C}>mp!+f`S{Jy
+eS|djM-~0pK_1b(S5WU|30000<MNUMnLSTZzJT0LB
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/clear.png b/packages/client/public/img/interface/environment/clear.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..efc8310e2c8e48d03f3ba45ea9b3d4f2747fb9a9
+GIT binary patch
+literal 497
+zcmV<N0S^9&P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80005FNkl<Zc%1E2
+zze@sP7=DU|AgQ(>C~{~r5bP4Na4T~$8l*|^AFzg+!pX(Omi~gUNdzeo^`e9%6)BY)
+zE@&!TnyMi}JiNXJ^TS_ven&zO_rSsX{dnK!;eDU`03AAX==fudXt`X9xJWCOBw*DO
+z*OdP&0fjRcv8)@LNy2ke&<FXo2&Uvx#6^~@#?Hhci5SzGATL;c5+?vb1ORYmI~~ov
+zkkuqcvw(Kk0xy6(j$%0j0EkBO2nGE_tB8RpMO;KW-zN2^ee(WzNI0{daArG^<wnn!
+zND8FABZI))0r}w-UyC!?@Dxxi=lkBNzt!M$m{7^=002`bMp?+0cbg{L^j4AOuNCjr
+zK4lbhRhE(z%(LPwR>H?F0RYo;hMw~jFG8wIkm@zM7Yh0Ts2h`M1f1DU_*h)=yhRQG
+zZnur@&(EG>&*x>KP$%y;St2R)?DaFGEH_9ve5GniCJ$W1D>QaGOmI3(be-bGj&(ay
+zyg0Bn^Iy;^)*|a(D-oU?2UP1anQ(1oi?+~ra0CD_Oilp+ojm}Exmy~iZ+IH#?$U}p
+nnqMr|M`q}+p$;87{w=-%=??8v-EI>S00000NkvXXu0mjfn48$~
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/deep_night.png b/packages/client/public/img/interface/environment/deep_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..5ebdbcaa811c5fd35fdd2f53ad6f1eae66ea6125
+GIT binary patch
+literal 121
+zcmeAS@N?(olHy`uVBq!ia0vp^3LwnE1|*BCs=fdz2TvErkcv5PuQ~EEDDbcxyrjU+
+z&GLVh1B*(nL3+aT%C+hJr&2RzfhvLE0n-L=#^T=azZr6ZApU{x4a_qv7=MYLpP~rj
+Nd%F6$taD0e0ss|hA)NpK
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/evening.png b/packages/client/public/img/interface/environment/evening.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e3638cedcb389a6d479a58e2e6dc96d115900fc
+GIT binary patch
+literal 338
+zcmV-Y0j>UtP)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80003QNkl<Zc%1E&
+zF^<A85JkU(1;sWLY3a6DgxCTa4uQlWXt~8+fp!mpM8geeKw?)&h&C073j~=A1q4};
+z*dEg$;a54%{P{m)D?lI+cz1-aFx%JZ)+Ch>je}P&wn#UAXyy?l;uKR7mzo0r)s(fy
+zI{+myQBB$Fm?50TWg2^FW5?rQ9RUZIX*mU8jWd-Hsbp!Tt>C!qB9a98y@dMfK(;ne
+z>#vJgTkFrVwZU=Kyzb7-p=|*ui75{O0GYZ-^5=Z-{yhLxI}7VQum(5{`h{bR#&c|c
+z+W6dk81<FO)adclCCtsE@!Y$IQ-Gqc$VR=wwMkQi^KX-W+a!kn0w_NgjxjsHJ$eYP
+ksgCy@c*Zmk2n1e=GvY#Pg%fxl#{d8T07*qoM6N<$g4QyS4FCWD
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/fog_day.png b/packages/client/public/img/interface/environment/fog_day.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b20fb2b77496e3a52a5f03ce3b0bff42779f97a
+GIT binary patch
+literal 97
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj8lEnWAr*6y6C_v{Cx{$4xbJYf
+te}M4i`%M=Wq<9wr2|h;?E;b$phATX8FDOm?@*k*&!PC{xWt~$(699r18|451
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/fog_night.png b/packages/client/public/img/interface/environment/fog_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2d2dc9a165765b57ce810f847ec6c33b3049224a
+GIT binary patch
+literal 96
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj>Ygr+Ar*6y6C_v{Cx{$ybjUcR
+tnw9h`+Ca)>v7?EU%VEV1w}TCg4Daq}d^nr&=Mzv1gQu&X%Q~loCIDYA9HamM
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/morning.png b/packages/client/public/img/interface/environment/morning.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2f9a2cfb610086606ef8aa973a92ada7d7fbb46c
+GIT binary patch
+literal 480
+zcmV<60U!Q}P)<h;3K|Lk000e1NJLTq001BW001Be1^@s6b9#F80004}Nkl<Zc%1E&
+zze>YU6vn@6l6Gj!P(_D=bP$BDzJdtZrIR2T^ab(;;_4GP6v4?&m!farDp+vwPoWh8
+zBGg9uC+Tqzs>!{%xoL6H{I+}U$@#vVbMFOma{fCk>jz!OAW@vg0RW(KMwx2rs)?Ol
+zM$FK$>V^p!U%Ks)Mp_|MHlmc&bqq=t7SlOgz}k6`T7N;dNsS|#MH~Q@-2nbUSvanr
+zNF92PNlWgByu#wPFg(7w0s!=yC9E|1i8_fL=sE^jJAJvh0+#JdJ0UdCuIp5`1Hexi
+zVZz_X(YD^;Ii}DAXTWnz(o30d=aj+Yi!dHwDC~r=17$l<Q+vPWLYj9woqxQhKOS*$
+z?i~m)R1=q&$U>w8o@0`ZVkBYQO1(+a+)*pKj-Lgt1D5Rz3mY~5T%?(ci(9sj*UM-u
+zVnEh@l}^M3<MBd`-_xUuA^^n$m?EkQH-cWXG+#vtgJ-}n0O0$9V*o%;`-IBzuL%q3
+zxM0;2#sJ{{R7)K2`lk9V5b<y~!DOHb_cr!I7CGAOx=xefe1a-eFT&ZM+MJx6KgTCf
+W5R>4XOt(M)0000<MNUMnLSTY{ncIZ`
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/night.png b/packages/client/public/img/interface/environment/night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..1cf64407b81c78c1ed38dff8fa3d6179abe7a3da
+GIT binary patch
+literal 183
+zcmeAS@N?(olHy`uVBq!ia0vp^3LwnE1|*BCs=ffJI!_nJkcv5PCmrNEpuppNx8%+L
+z`Y=t6cU!s*W{I_PRDL(hoF%}anBrbEai32_R<yF-R>w!zO8i3ZY$~yO@m1~$%br6o
+zWWF%zcXS@!^~5i5?#2(<Ou;-o;^*}iYcn2U$rAbZ{Q4oog)vKxYafg?6nz!DE>UyU
+h>WdjtEdrZZ`2*|xr8TF$e+G03gQu&X%Q~loCIBGdM(O|n
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/rain_day.png b/packages/client/public/img/interface/environment/rain_day.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..d7c734d0b16617dcda1aad808871599dbc11fd48
+GIT binary patch
+literal 119
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`GjcAhSdAr*6y6C_xhrE+do{;)T!
+z_z<}v;p(~n3O;LC4Zb#?XA1hbg4Ov1)2^n5dH?@=Ci2^Hzeqc&A;HSb&R}<>$Hq%$
+Rn>x@W22WQ%mvv4FO#lmeCWHV0
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/rain_night.png b/packages/client/public/img/interface/environment/rain_night.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..900efd99a2d9c0bc6d6c86f1bd1aadfb8d20e3da
+GIT binary patch
+literal 119
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`GjcAhSdAr*6y6C_xhrCg4R|5s<@
+zx8uIE=kfn$gN<Sbt^he6M;D9nD008x3exiXquy%!LubKk)x`-SJTeRnEn2*GTf|i6
+Q0!?D@boFyt=akR{04OdY^#A|>
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/snow.png b/packages/client/public/img/interface/environment/snow.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..109eb08f42b0c3d21d588eb9a202ef3922e73ffa
+GIT binary patch
+literal 122
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gjj-D=#Ar*6y6C_xhrRMDT^1<G)
+z;zQ(y)cZ^SEBLHoHTc?mo+;?#3RdS6OuL%?1A%(0eFe|*Zr75}2Q?&ED;OCjKi(O&
+TCT!tbpkWN2u6{1-oD!M<5b7*H
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/public/img/interface/environment/storm.png b/packages/client/public/img/interface/environment/storm.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..7475ba011fd6386bc235af7d7a79d4d27b7697cf
+GIT binary patch
+literal 136
+zcmeAS@N?(olHy`uVBq!ia0vp^5+KaM1|%Pp+x`Gj{+=$5Ar*6y6C_xlFqyw!@qfvK
+zgUO9Md%xEUs9j~6vF~6q<IajJOa}k{pW*0fpT}y@thtFnzCqGwqT&x8x8u&onM%4>
+j<Qd%6kzifSpv}OrIVzaP-lnt-Xf%VTtDnm{r-UW|Ljf&W
+
+literal 0
+HcmV?d00001
+
+diff --git a/packages/client/scripts/download-pixellab-environment-icons.mjs b/packages/client/scripts/download-pixellab-environment-icons.mjs
+new file mode 100644
+index 0000000..b4d25e6
+--- /dev/null
++++ b/packages/client/scripts/download-pixellab-environment-icons.mjs
+@@ -0,0 +1,61 @@
++/**
++ * Baixa ícones de ambiente do PixelLab quando estiverem prontos.
++ * Uso: node scripts/download-pixellab-environment-icons.mjs
++ */
++import fs from 'fs';
++import path from 'path';
++import { fileURLToPath } from 'url';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const outDir = path.join(__dirname, '../public/img/interface/environment');
++
++/** object_id → nome do arquivo */
++const JOBS = {
++    rain_day: '5486a10e-ce74-4642-ac9d-720154ee5a36',
++    rain_night: '09870ec1-00b6-4373-8443-4fea0ecc5a85',
++    fog_day: '32ef4deb-6699-4980-8901-b45c1109e557',
++    fog_night: '65a59a31-ab00-4da2-b411-8b4c66392aca',
++    snow: '7c800890-e132-45f4-b810-75c8948d0f35',
++    storm: '87c24b8d-197a-4c1a-a4d5-b1960ff51348'
++};
++
++async function download(name, objectId) {
++    let url = `https://api.pixellab.ai/mcp/map-objects/${objectId}/download`,
++        response = await fetch(url);
++
++    if (!response.ok) return false;
++
++    let buffer = Buffer.from(await response.arrayBuffer());
++
++    if (buffer.length < 200) return false;
++
++    fs.writeFileSync(path.join(outDir, `${name}.png`), buffer);
++    console.log(`OK: ${name}.png`);
++
++    return true;
++}
++
++async function main() {
++    fs.mkdirSync(outDir, { recursive: true });
++
++    let pending = { ...JOBS },
++        attempts = 0,
++        maxAttempts = 40;
++
++    while (Object.keys(pending).length && attempts < maxAttempts) {
++        for (let [name, id] of Object.entries(pending)) {
++            if (await download(name, id)) delete pending[name];
++        }
++
++        if (!Object.keys(pending).length) break;
++
++        attempts++;
++        console.log(`Aguardando ${Object.keys(pending).join(', ')}... (${attempts}/${maxAttempts})`);
++        await new Promise((r) => setTimeout(r, 15000));
++    }
++
++    if (Object.keys(pending).length)
++        console.log('Pendentes:', Object.keys(pending).join(', '));
++}
++
++main();
+diff --git a/packages/client/scripts/generate-environment-icons.mjs b/packages/client/scripts/generate-environment-icons.mjs
+new file mode 100644
+index 0000000..88ef882
+--- /dev/null
++++ b/packages/client/scripts/generate-environment-icons.mjs
+@@ -0,0 +1,225 @@
++/**
++ * Gera ícones pixel art 24x24 para a HUD de ambiente (dia/noite e clima).
++ * Uso: node scripts/generate-environment-icons.mjs
++ */
++import fs from 'fs';
++import path from 'path';
++import zlib from 'zlib';
++import { fileURLToPath } from 'url';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const outDir = path.join(__dirname, '../public/img/interface/environment');
++
++const T = 0;
++const W = 24;
++const H = 24;
++
++function createCanvas() {
++    return new Uint8ClampedArray(W * H * 4);
++}
++
++function setPixel(data, x, y, r, g, b, a = 255) {
++    if (x < 0 || y < 0 || x >= W || y >= H) return;
++
++    let i = (y * W + x) * 4;
++
++    data[i] = r;
++    data[i + 1] = g;
++    data[i + 2] = b;
++    data[i + 3] = a;
++}
++
++function fillRect(data, x, y, w, h, r, g, b, a = 255) {
++    for (let py = y; py < y + h; py++)
++        for (let px = x; px < x + w; px++) setPixel(data, px, py, r, g, b, a);
++}
++
++function drawCircle(data, cx, cy, radius, r, g, b, a = 255) {
++    for (let y = -radius; y <= radius; y++)
++        for (let x = -radius; x <= radius; x++)
++            if (x * x + y * y <= radius * radius) setPixel(data, cx + x, cy + y, r, g, b, a);
++}
++
++function drawHorizon(data, y, r, g, b) {
++    fillRect(data, 0, y, W, H - y, r, g, b);
++}
++
++const icons = {
++    morning: (data) => {
++        drawHorizon(data, 14, 255, 180, 80);
++        drawCircle(data, 12, 14, 5, 255, 220, 60);
++        fillRect(data, 0, 13, W, 2, 180, 100, 40);
++    },
++    afternoon: (data) => {
++        fillRect(data, 0, 0, W, H, 100, 180, 255);
++        drawCircle(data, 12, 8, 6, 255, 240, 50);
++        for (let i = 0; i < 8; i++) {
++            let a = (i / 8) * Math.PI * 2,
++                x = 12 + Math.round(Math.cos(a) * 9),
++                y = 8 + Math.round(Math.sin(a) * 9);
++
++            setPixel(data, x, y, 255, 240, 80);
++            setPixel(data, x + 1, y, 255, 240, 80);
++        }
++    },
++    evening: (data) => {
++        drawHorizon(data, 14, 200, 80, 60);
++        fillRect(data, 0, 0, W, 14, 120, 50, 80);
++        drawCircle(data, 12, 14, 5, 255, 120, 40);
++        fillRect(data, 0, 13, W, 2, 140, 60, 30);
++    },
++    night: (data) => {
++        fillRect(data, 0, 0, W, H, 20, 30, 70);
++        drawCircle(data, 14, 8, 5, 240, 240, 200);
++        fillRect(data, 8, 6, 8, 10, T, T, T);
++        setPixel(data, 5, 5, 255, 255, 200);
++        setPixel(data, 18, 12, 255, 255, 200);
++        setPixel(data, 8, 16, 255, 255, 200);
++    },
++    deep_night: (data) => {
++        for (let y = 4; y < 14; y++)
++            for (let x = 10; x < 18; x++) {
++                let dx = x - 14,
++                    dy = y - 9;
++
++                if (dx * dx + dy * dy <= 18 && x < 15) setPixel(data, x, y, 55, 60, 85);
++            }
++
++        setPixel(data, 6, 6, 90, 95, 120);
++        setPixel(data, 18, 13, 75, 80, 105);
++        setPixel(data, 9, 17, 65, 70, 95);
++    },
++    clear: (data) => {
++        drawCircle(data, 8, 8, 4, 255, 230, 60);
++        fillRect(data, 10, 10, 12, 6, 220, 220, 230);
++        fillRect(data, 12, 8, 10, 4, 200, 200, 210);
++    },
++    rain_day: (data) => {
++        fillRect(data, 5, 6, 14, 7, 160, 170, 185);
++        fillRect(data, 7, 4, 10, 4, 180, 185, 195);
++        for (let x = 8; x < 18; x += 3) {
++            setPixel(data, x, 14, 80, 140, 255);
++            setPixel(data, x, 15, 80, 140, 255);
++            setPixel(data, x + 1, 16, 80, 140, 255);
++        }
++    },
++    rain_night: (data) => {
++        fillRect(data, 5, 6, 14, 7, 70, 75, 95);
++        fillRect(data, 7, 4, 10, 4, 90, 95, 115);
++        for (let x = 8; x < 18; x += 3) {
++            setPixel(data, x, 14, 100, 120, 200);
++            setPixel(data, x, 15, 100, 120, 200);
++            setPixel(data, x + 1, 16, 100, 120, 200);
++        }
++    },
++    fog_day: (data) => {
++        for (let y of [8, 11, 14, 17])
++            fillRect(data, 2, y, 20, 2, 190, 195, 205, 200);
++    },
++    fog_night: (data) => {
++        for (let y of [8, 11, 14, 17])
++            fillRect(data, 2, y, 20, 2, 80, 85, 100, 210);
++    },
++    snow: (data) => {
++        fillRect(data, 5, 6, 14, 7, 180, 190, 210);
++        fillRect(data, 7, 4, 10, 4, 200, 210, 225);
++        for (let x = 7; x < 18; x += 4) {
++            setPixel(data, x, 15, 255, 255, 255);
++            setPixel(data, x + 1, 14, 255, 255, 255);
++            setPixel(data, x, 17, 255, 255, 255);
++            setPixel(data, x + 2, 16, 255, 255, 255);
++        }
++    },
++    storm: (data) => {
++        fillRect(data, 4, 5, 16, 8, 55, 60, 75);
++        fillRect(data, 6, 3, 12, 4, 70, 75, 90);
++        fillRect(data, 11, 12, 2, 6, 255, 230, 50);
++        fillRect(data, 9, 14, 6, 2, 255, 230, 50);
++        fillRect(data, 13, 10, 2, 3, 255, 230, 50);
++    }
++};
++
++function crc32(buf) {
++    let crc = -1;
++
++    for (let i = 0; i < buf.length; i++) {
++        crc ^= buf[i];
++
++        for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
++    }
++
++    return (crc ^ -1) >>> 0;
++}
++
++function chunk(type, data) {
++    let typeBuf = Buffer.from(type),
++        len = Buffer.alloc(4);
++
++    len.writeUInt32BE(data.length);
++
++    let crcBuf = Buffer.alloc(4),
++        crc = crc32(Buffer.concat([typeBuf, data]));
++
++    crcBuf.writeUInt32BE(crc);
++
++    return Buffer.concat([len, typeBuf, data, crcBuf]);
++}
++
++function encodePng(rgba) {
++    let signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
++        ihdr = Buffer.alloc(13);
++
++    ihdr.writeUInt32BE(W, 0);
++    ihdr.writeUInt32BE(H, 4);
++    ihdr[8] = 8;
++    ihdr[9] = 6;
++
++    let stride = 1 + W * 4,
++        raw = Buffer.alloc(stride * H);
++
++    for (let y = 0; y < H; y++) {
++        raw[y * stride] = 0;
++
++        for (let x = 0; x < W; x++) {
++            let si = (y * W + x) * 4,
++                di = y * stride + 1 + x * 4;
++
++            raw[di] = rgba[si];
++            raw[di + 1] = rgba[si + 1];
++            raw[di + 2] = rgba[si + 2];
++            raw[di + 3] = rgba[si + 3];
++        }
++    }
++
++    return Buffer.concat([
++        signature,
++        chunk('IHDR', ihdr),
++        chunk('IDAT', zlib.deflateSync(raw)),
++        chunk('IEND', Buffer.alloc(0))
++    ]);
++}
++
++fs.mkdirSync(outDir, { recursive: true });
++
++/** Ícones já gerados pelo PixelLab — não sobrescrever. */
++const pixellabIcons = new Set([
++    'morning',
++    'afternoon',
++    'evening',
++    'night',
++    'deep_night',
++    'clear'
++]);
++
++for (let [name, draw] of Object.entries(icons)) {
++    if (pixellabIcons.has(name)) {
++        console.log(`Ignorado (PixelLab): ${name}.png`);
++        continue;
++    }
++    let data = createCanvas();
++
++    draw(data);
++
++    fs.writeFileSync(path.join(outDir, `${name}.png`), encodePng(data));
++    console.log(`Gerado: ${name}.png`);
++}
+diff --git a/packages/client/scss/game/_index.scss b/packages/client/scss/game/_index.scss
+index 48f7d69..ee6a555 100644
+--- a/packages/client/scss/game/_index.scss
++++ b/packages/client/scss/game/_index.scss
+@@ -27,6 +27,7 @@
+ @use 'impl/notifications';
+ @use 'impl/page';
+ @use 'impl/player';
++@use 'impl/environment-hud';
+ @use 'impl/profile';
+ @use 'impl/quests';
+ @use 'impl/settings';
+diff --git a/packages/client/scss/game/impl/_environment-hud.scss b/packages/client/scss/game/impl/_environment-hud.scss
+new file mode 100644
+index 0000000..22d81d4
+--- /dev/null
++++ b/packages/client/scss/game/impl/_environment-hud.scss
+@@ -0,0 +1,111 @@
++@use '../../abstracts/media';
++
++#player-info {
++    position: absolute;
++    top: 0;
++    left: 0;
++    z-index: 10;
++    pointer-events: none;
++    user-select: none;
++}
++
++#player-bars {
++    position: absolute;
++    top: 0.5em;
++    left: 1em;
++    display: flex;
++    flex-flow: row nowrap;
++    align-items: center;
++    gap: 0.32em;
++}
++
++#health {
++    position: relative;
++    top: auto;
++    left: auto;
++    flex: 0 0 auto;
++}
++
++#environment-hud {
++    position: relative;
++    flex: 0 0 auto;
++}
++
++#environment-hud.environment-hud-hidden {
++    display: none;
++}
++
++.env-hud-compact {
++    display: flex;
++    flex-flow: row nowrap;
++    align-items: center;
++    gap: 0.28em;
++
++    height: 2.4em;
++    padding: 0 0.38em;
++
++    background: rgb(0 0 0 / 28%);
++    border: 1px solid rgb(255 255 255 / 10%);
++    border-radius: 2px;
++    box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
++
++    pointer-events: none;
++    cursor: none;
++}
++
++.env-hud-time-icon,
++.env-hud-weather-icon {
++    width: 1.35em;
++    height: 1.35em;
++    image-rendering: pixelated;
++    flex-shrink: 0;
++    pointer-events: none;
++}
++
++.env-hud-timer {
++    min-width: 2.15em;
++
++    font-size: 0.78em;
++    font-weight: 600;
++    color: rgb(255 255 255 / 90%);
++    text-align: center;
++    letter-spacing: 0.03em;
++    line-height: 1;
++    white-space: nowrap;
++    pointer-events: none;
++}
++
++@media (--lg) {
++    #player-bars {
++        gap: 0.26em;
++    }
++
++    #health {
++        font-size: 0.85em;
++    }
++
++    .env-hud-compact {
++        height: 2.1em;
++        padding: 0 0.32em;
++        gap: 0.22em;
++    }
++
++    .env-hud-time-icon,
++    .env-hud-weather-icon {
++        width: 1.2em;
++        height: 1.2em;
++    }
++
++    .env-hud-timer {
++        font-size: 0.7em;
++        min-width: 1.95em;
++    }
++}
++
++_::-webkit-full-page-media,
++_:future,
++:root .safari_only {
++    #player-bars {
++        left: 2.5em;
++    }
++}
+diff --git a/packages/client/scss/game/impl/_player.scss b/packages/client/scss/game/impl/_player.scss
+index 4ce3308..fa5df50 100644
+--- a/packages/client/scss/game/impl/_player.scss
++++ b/packages/client/scss/game/impl/_player.scss
+@@ -10,11 +10,6 @@
+     position: absolute;
+ }
+ 
+-#health {
+-    top: 0.5em;
+-    left: 1em;
+-}
+-
+ #mana {
+     top: 3.25em;
+     left: 1em;
+@@ -72,7 +67,6 @@
+ _::-webkit-full-page-media,
+ _:future,
+ :root .safari_only {
+-    #health,
+     #mana {
+         left: 2.5em !important;
+     }
+@@ -83,7 +77,6 @@ _:future,
+ }
+ 
+ @media (--lg) {
+-    #health,
+     #mana {
+         font-size: 0.85em;
+     }
+diff --git a/packages/client/src/game.ts b/packages/client/src/game.ts
+index e882ace..de88af8 100644
+--- a/packages/client/src/game.ts
++++ b/packages/client/src/game.ts
+@@ -17,6 +17,7 @@ import Socket from './network/socket';
+ import Camera from './renderer/camera';
+ import Minigame from './renderer/minigame';
+ import Overlays from './renderer/overlays';
++import EnvironmentController from './renderer/environment';
+ import WebGL from './renderer/webgl/webgl';
+ import Canvas from './renderer/canvas';
+ import Updater from './renderer/updater';
+@@ -43,6 +44,7 @@ export default class Game {
+ 
+     public zoning: Zoning = new Zoning();
+     public overlays: Overlays = new Overlays();
++    public environment: EnvironmentController;
+     public pathfinder: Pathfinder = new Pathfinder();
+ 
+     public info: InfoController = new InfoController();
+@@ -83,6 +85,8 @@ export default class Game {
+ 
+         this.player = new Player('', this);
+ 
++        this.environment = new EnvironmentController(this);
++
+         this.map = new Map(this);
+         this.camera = new Camera(this.map.width, this.map.height, this.map.tileSize);
+         this.sprites = new SpritesController();
+diff --git a/packages/client/src/menu/environment-hud.ts b/packages/client/src/menu/environment-hud.ts
+new file mode 100644
+index 0000000..1e1489e
+--- /dev/null
++++ b/packages/client/src/menu/environment-hud.ts
+@@ -0,0 +1,93 @@
++import { TIME_OF_DAY_COUNT, TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++
++import type EnvironmentController from '../renderer/environment';
++
++const TIME_ICON_FILES = ['morning', 'afternoon', 'evening', 'night', 'deep_night'];
++
++const WEATHER_ICON_FILES = [
++    'clear',
++    'rain_day',
++    'rain_night',
++    'fog_day',
++    'fog_night',
++    'snow',
++    'storm'
++];
++
++const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite', 'Alta Madrugada'];
++const WEATHER_LABELS = [
++    'Limpo',
++    'Chuva',
++    'Chuva noturna',
++    'Névoa',
++    'Névoa noturna',
++    'Neve',
++    'Tempestade'
++];
++
++const ICON_BASE = '/img/interface/environment';
++
++/**
++ * HUD ao lado da barra de HP: fase do dia, clima e contagem regressiva.
++ */
++export default class EnvironmentHud {
++    private container: HTMLElement = document.querySelector('#environment-hud')!;
++    private bar: HTMLElement = document.querySelector('.env-hud-compact')!;
++    private timeIcon: HTMLImageElement = document.querySelector('#env-time-icon')!;
++    private weatherIcon: HTMLImageElement = document.querySelector('#env-weather-icon')!;
++    private timer: HTMLElement = document.querySelector('#env-time-timer')!;
++
++    private lastTimeIcon = '';
++    private lastWeatherIcon = '';
++
++    public update(environment: EnvironmentController): void {
++        if (!environment.isHudVisible()) {
++            this.container.classList.add('environment-hud-hidden');
++            this.container.setAttribute('aria-hidden', 'true');
++            return;
++        }
++
++        this.container.classList.remove('environment-hud-hidden');
++        this.container.setAttribute('aria-hidden', 'false');
++
++        let timeOfDay = environment.getTimeOfDay(),
++            weather = environment.getWeather(),
++            timeFile = TIME_ICON_FILES[timeOfDay],
++            weatherFile = WEATHER_ICON_FILES[weather];
++
++        if (timeFile !== this.lastTimeIcon) {
++            this.timeIcon.src = `${ICON_BASE}/${timeFile}.png?v=5`;
++            this.lastTimeIcon = timeFile;
++        }
++
++        if (weatherFile !== this.lastWeatherIcon) {
++            this.weatherIcon.src = `${ICON_BASE}/${weatherFile}.png?v=4`;
++            this.lastWeatherIcon = weatherFile;
++        }
++
++        let nextPhase = ((timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay,
++            inTransition = environment.getTransition() > 0,
++            phaseLabel = TIME_LABELS[timeOfDay],
++            nextLabel = TIME_LABELS[nextPhase],
++            weatherLabel = WEATHER_LABELS[weather],
++            remaining = environment.getPhaseRemaining();
++
++        this.timer.textContent = this.formatRemaining(remaining, environment.isCycleEnabled());
++
++        let tip = inTransition
++            ? `${phaseLabel} → ${nextLabel} (${Math.round(environment.getTransition() * 100)}%) · ${weatherLabel}`
++            : `${phaseLabel} · próxima: ${nextLabel} · ${weatherLabel}`;
++
++        this.bar.setAttribute('aria-label', tip);
++    }
++
++    private formatRemaining(remaining: number, cycleEnabled: boolean): string {
++        if (!cycleEnabled || remaining < 0) return '—';
++
++        let totalSeconds = Math.ceil(remaining / 1000),
++            minutes = Math.floor(totalSeconds / 60),
++            seconds = totalSeconds % 60;
++
++        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
++    }
++}
+diff --git a/packages/client/src/network/connection.ts b/packages/client/src/network/connection.ts
+index 658791d..200992e 100644
+--- a/packages/client/src/network/connection.ts
++++ b/packages/client/src/network/connection.ts
+@@ -23,6 +23,7 @@ import type SpritesController from '../controllers/sprites';
+ import type Player from '../entity/character/player/player';
+ import type PointerController from '../controllers/pointer';
+ import type EntitiesController from '../controllers/entities';
++import type { EnvironmentState } from '@kaetram/common/types/environment';
+ import type { PlayerData } from '@kaetram/common/network/impl/player';
+ import type { EntityDisplayInfo } from '@kaetram/common/types/entity';
+ import type { SerializedSkills, SkillData } from '@kaetram/common/network/impl/skill';
+@@ -183,6 +184,7 @@ export default class Connection {
+         this.messages.onBattlePass(this.handleBattlePass.bind(this));
+         this.messages.onOdinSkill(this.handleOdinSkill.bind(this));
+         this.messages.onCosmo(this.handleCosmo.bind(this));
++        this.messages.onEnvironment(this.handleEnvironment.bind(this));
+     }
+ 
+     /**
+@@ -1460,6 +1462,24 @@ export default class Connection {
+         }
+     }
+ 
++    /**
++     * Sincroniza iluminação ambiente e clima nos mapas externos.
++     */
++
++    private handleEnvironment(opcode: Opcodes.Environment, info?: EnvironmentState): void {
++        switch (opcode) {
++            case Opcodes.Environment.Sync: {
++                if (info) this.game.environment.sync(info);
++                break;
++            }
++
++            case Opcodes.Environment.Remove: {
++                this.game.environment.remove();
++                break;
++            }
++        }
++    }
++
+     /**
+      * Handles camera packets such as locking the camera.
+      * @param opcode The type of action we are performing with the camera.
+diff --git a/packages/client/src/network/messages.ts b/packages/client/src/network/messages.ts
+index 46eaebf..b6f2dc3 100644
+--- a/packages/client/src/network/messages.ts
++++ b/packages/client/src/network/messages.ts
+@@ -53,7 +53,8 @@ import type {
+     UpdatePacketCallback,
+     WelcomePacketCallback,
+     OdinSkillPacketCallback,
+-    CosmoPacketCallback
++    CosmoPacketCallback,
++    EnvironmentPacketCallback
+ } from '@kaetram/common/types/messages/outgoing';
+ import type { ConnectedPacketCallback } from '@kaetram/common/network/impl/connected';
+ 
+@@ -113,6 +114,7 @@ export default class Messages {
+     private resourceCallback?: ResourcePacketCallback;
+     private odinSkillCallback?: OdinSkillPacketCallback;
+     private cosmoCallback?: CosmoPacketCallback;
++    private environmentCallback?: EnvironmentPacketCallback;
+ 
+     /**
+      * Do not clutter up the Socket class with callbacks,
+@@ -178,6 +180,7 @@ export default class Messages {
+         this.messages[Packets.BattlePass] = () => this.battlePassCallback;
+         this.messages[Packets.OdinSkill] = () => this.odinSkillCallback;
+         this.messages[Packets.Cosmo] = () => this.cosmoCallback;
++        this.messages[Packets.Environment] = () => this.environmentCallback;
+     }
+ 
+     /**
+@@ -541,4 +544,8 @@ export default class Messages {
+     public onCosmo(callback: CosmoPacketCallback): void {
+         this.cosmoCallback = callback;
+     }
++
++    public onEnvironment(callback: EnvironmentPacketCallback): void {
++        this.environmentCallback = callback;
++    }
+ }
+diff --git a/packages/client/src/renderer/environment.ts b/packages/client/src/renderer/environment.ts
+new file mode 100644
+index 0000000..74c2039
+--- /dev/null
++++ b/packages/client/src/renderer/environment.ts
+@@ -0,0 +1,639 @@
++import { TIME_OF_DAY_COUNT, TimeOfDay, WeatherType } from '@kaetram/common/types/environment';
++
++import EnvironmentHud from '../menu/environment-hud';
++
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++import type Game from '../game';
++
++interface Tint {
++    r: number;
++    g: number;
++    b: number;
++    a: number;
++}
++
++interface SnowFlake {
++    x: number;
++    y: number;
++    speed: number;
++    size: number;
++    opacity: number;
++    drift: number;
++}
++
++interface RainDrop {
++    x: number;
++    y: number;
++    speed: number;
++    length: number;
++    opacity: number;
++    drift: number;
++    depth: number;
++    width: number;
++}
++
++interface RainSplash {
++    x: number;
++    y: number;
++    life: number;
++    maxLife: number;
++    radius: number;
++    opacity: number;
++}
++
++/** Cores de iluminação ambiente por período do dia. */
++const TIME_TINTS: Tint[] = [
++    { r: 255, g: 210, b: 140, a: 0.1 },
++    { r: 255, g: 255, b: 255, a: 0 },
++    { r: 255, g: 130, b: 60, a: 0.18 },
++    { r: 15, g: 25, b: 70, a: 0.5 },
++    { r: 4, g: 8, b: 28, a: 0.72 }
++];
++
++const WEATHER_DARKEN: Record<WeatherType, number> = {
++    [WeatherType.Clear]: 0,
++    [WeatherType.RainDay]: 0.06,
++    [WeatherType.RainNight]: 0.1,
++    [WeatherType.FogDay]: 0.04,
++    [WeatherType.FogNight]: 0.08,
++    [WeatherType.Snow]: 0.05,
++    [WeatherType.Storm]: 0.15
++};
++
++/**
++ * Renderiza iluminação ambiente e efeitos climáticos nos mapas externos.
++ */
++export default class EnvironmentController {
++    public active = false;
++
++    private timeOfDay = TimeOfDay.Afternoon;
++    private weather = WeatherType.Clear;
++    private transition = 0;
++    private cycleEnabled = true;
++    private phaseRemaining = -1;
++
++    private hud = new EnvironmentHud();
++
++    private currentTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
++    private targetTint: Tint = { r: 0, g: 0, b: 0, a: 0 };
++
++    private snowFlakes: SnowFlake[] = [];
++    private rainDrops: RainDrop[] = [];
++    private splashes: RainSplash[] = [];
++
++    private lightningAlpha = 0;
++    private nextLightning = 0;
++
++    private fogPulse = 0;
++    private rainMistPulse = 0;
++    private rainWind = 0;
++    private rainWindTarget = 0;
++    private nextWindShift = 0;
++
++    public constructor(private game: Game) {}
++
++    public sync(state: EnvironmentState): void {
++        let weatherChanged = this.weather !== state.weather;
++
++        this.active = true;
++        this.timeOfDay = state.timeOfDay;
++        this.weather = state.weather;
++        this.transition = state.transition;
++        this.cycleEnabled = state.cycleEnabled;
++        this.phaseRemaining = state.phaseRemaining;
++
++        if (weatherChanged) this.resetWeatherEffects();
++
++        this.updateTargetTint();
++        Object.assign(this.currentTint, this.targetTint);
++
++        if (weatherChanged) this.initWeatherParticles();
++
++        this.hud.update(this);
++    }
++
++    public remove(): void {
++        this.active = false;
++        this.resetWeatherEffects();
++        this.currentTint = { r: 0, g: 0, b: 0, a: 0 };
++        this.targetTint = { r: 0, g: 0, b: 0, a: 0 };
++        this.hud.update(this);
++    }
++
++    public isHudVisible(): boolean {
++        return this.active;
++    }
++
++    public getTimeOfDay(): TimeOfDay {
++        return this.timeOfDay;
++    }
++
++    public getWeather(): WeatherType {
++        return this.weather;
++    }
++
++    public getTransition(): number {
++        return this.transition;
++    }
++
++    public getPhaseRemaining(): number {
++        return this.phaseRemaining;
++    }
++
++    public isCycleEnabled(): boolean {
++        return this.cycleEnabled;
++    }
++
++    private resetWeatherEffects(): void {
++        this.snowFlakes = [];
++        this.rainDrops = [];
++        this.splashes = [];
++        this.lightningAlpha = 0;
++        this.nextLightning = 0;
++        this.fogPulse = 0;
++        this.rainMistPulse = 0;
++        this.rainWind = 0;
++        this.rainWindTarget = 0;
++        this.nextWindShift = 0;
++    }
++
++    private isRainWeather(): boolean {
++        return (
++            this.weather === WeatherType.RainDay ||
++            this.weather === WeatherType.RainNight ||
++            this.weather === WeatherType.Storm
++        );
++    }
++
++    private isNightRain(): boolean {
++        return this.weather === WeatherType.RainNight || this.weather === WeatherType.Storm;
++    }
++
++    private getNextTimeOfDay(): TimeOfDay {
++        return ((this.timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay;
++    }
++
++    private lerpTint(from: Tint, to: Tint, t: number): Tint {
++        return {
++            r: from.r + (to.r - from.r) * t,
++            g: from.g + (to.g - from.g) * t,
++            b: from.b + (to.b - from.b) * t,
++            a: from.a + (to.a - from.a) * t
++        };
++    }
++
++    private updateTargetTint(): void {
++        let from = TIME_TINTS[this.timeOfDay],
++            to = TIME_TINTS[this.getNextTimeOfDay()],
++            base = this.lerpTint(from, to, this.transition),
++            darken = WEATHER_DARKEN[this.weather];
++
++        this.targetTint = {
++            r: base.r * (1 - darken),
++            g: base.g * (1 - darken),
++            b: base.b * (1 - darken * 0.5),
++            a: Math.min(0.75, base.a + darken)
++        };
++    }
++
++    private initWeatherParticles(): void {
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        switch (this.weather) {
++            case WeatherType.RainDay:
++            case WeatherType.RainNight:
++                this.initRain(canvasWidth, canvasHeight, 520);
++                break;
++
++            case WeatherType.Storm:
++                this.initRain(canvasWidth, canvasHeight, 780);
++                break;
++
++            case WeatherType.Snow:
++                for (let i = 0; i < 250; i++)
++                    this.snowFlakes.push(this.createSnowFlake(canvasWidth, canvasHeight, true));
++                break;
++        }
++    }
++
++    private initRain(width: number, height: number, count: number): void {
++        this.rainDrops = [];
++
++        for (let i = 0; i < count; i++)
++            this.rainDrops.push(this.createRainDrop(width, height, true));
++    }
++
++    private createSnowFlake(width: number, height: number, randomY = false): SnowFlake {
++        return {
++            x: Math.random() * width,
++            y: randomY ? Math.random() * height : -10,
++            speed: 0.8 + Math.random() * 1.5,
++            size: 2 + Math.random() * 3,
++            opacity: 0.45 + Math.random() * 0.4,
++            drift: (Math.random() - 0.5) * 0.8
++        };
++    }
++
++    private createRainDrop(width: number, height: number, randomY = false): RainDrop {
++        let isStorm = this.weather === WeatherType.Storm,
++            depth = Math.random(),
++            depthFactor = 0.45 + depth * 0.55;
++
++        return {
++            x: Math.random() * width,
++            y: randomY ? Math.random() * height : -30 - Math.random() * 80,
++            speed: (7 + Math.random() * 7) * depthFactor * (isStorm ? 1.25 : 1),
++            length: (10 + Math.random() * 18) * depthFactor,
++            opacity: (0.15 + depth * 0.55) * (isStorm ? 1.1 : 1),
++            drift: (-1.8 + Math.random() * 0.6) * (isStorm ? 1.4 : 1),
++            depth,
++            width: (0.6 + depth * 1.6) * (isStorm ? 1.2 : 1)
++        };
++    }
++
++    private spawnSplash(x: number, y: number): void {
++        let isStorm = this.weather === WeatherType.Storm,
++            maxSplashes = isStorm ? 140 : 100;
++
++        if (this.splashes.length >= maxSplashes) this.splashes.shift();
++
++        this.splashes.push({
++            x,
++            y,
++            life: 0,
++            maxLife: 180 + Math.random() * 140,
++            radius: 1.2 + Math.random() * (isStorm ? 3.5 : 2.5),
++            opacity: 0.35 + Math.random() * 0.45
++        });
++    }
++
++    public update(time: number): void {
++        if (!this.active) return;
++
++        this.updateTargetTint();
++
++        let speed = 0.06;
++
++        this.currentTint.r += (this.targetTint.r - this.currentTint.r) * speed;
++        this.currentTint.g += (this.targetTint.g - this.currentTint.g) * speed;
++        this.currentTint.b += (this.targetTint.b - this.currentTint.b) * speed;
++        this.currentTint.a += (this.targetTint.a - this.currentTint.a) * speed;
++
++        this.fogPulse = Math.sin(time / 2000) * 0.5 + 0.5;
++        this.rainMistPulse = Math.sin(time / 3200) * 0.5 + 0.5;
++
++        if (this.isRainWeather()) {
++            if (time >= this.nextWindShift) {
++                this.rainWindTarget = (Math.random() - 0.5) * 2.2;
++                this.nextWindShift = time + 1800 + Math.random() * 4000;
++            }
++
++            this.rainWind += (this.rainWindTarget - this.rainWind) * 0.02;
++        }
++
++        let dt = Math.min(this.game.timeDiff || 16, 50);
++
++        this.updateSnow(dt);
++        this.updateRain(dt);
++        this.updateSplashes(dt);
++        this.updateStorm(time);
++        this.tickPhaseRemaining(dt);
++        this.hud.update(this);
++    }
++
++    private tickPhaseRemaining(dt: number): void {
++        if (!this.active || !this.cycleEnabled || this.phaseRemaining < 0) return;
++
++        this.phaseRemaining = Math.max(0, this.phaseRemaining - dt);
++    }
++
++    private updateSnow(dt: number): void {
++        if (!this.snowFlakes.length) return;
++
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        for (let flake of this.snowFlakes) {
++            flake.y += flake.speed * (dt / 16);
++            flake.x += flake.drift * (dt / 16);
++
++            if (flake.y > canvasHeight + 20 || flake.x < -20 || flake.x > canvasWidth + 20)
++                Object.assign(flake, this.createSnowFlake(canvasWidth, canvasHeight));
++        }
++    }
++
++    private updateRain(dt: number): void {
++        if (!this.rainDrops.length) return;
++
++        let { canvasWidth, canvasHeight } = this.game.renderer;
++
++        if (!canvasWidth || !canvasHeight) return;
++
++        let groundY = canvasHeight - 4,
++            wind = this.rainWind;
++
++        for (let drop of this.rainDrops) {
++            let prevY = drop.y;
++
++            drop.y += drop.speed * (dt / 16);
++            drop.x += (drop.drift + wind) * (dt / 16);
++
++            let hitGround = prevY < groundY && drop.y + drop.length >= groundY;
++
++            if (hitGround) {
++                if (Math.random() < 0.72) this.spawnSplash(drop.x, groundY - Math.random() * 2);
++                Object.assign(drop, this.createRainDrop(canvasWidth, canvasHeight));
++                continue;
++            }
++
++            if (drop.y > canvasHeight + 40 || drop.x < -40 || drop.x > canvasWidth + 40)
++                Object.assign(drop, this.createRainDrop(canvasWidth, canvasHeight));
++        }
++    }
++
++    private updateSplashes(dt: number): void {
++        if (!this.splashes.length) return;
++
++        for (let i = this.splashes.length - 1; i >= 0; i--) {
++            let splash = this.splashes[i];
++
++            splash.life += dt;
++
++            if (splash.life >= splash.maxLife) this.splashes.splice(i, 1);
++        }
++    }
++
++    private updateStorm(time: number): void {
++        if (this.weather !== WeatherType.Storm) return;
++
++        if (this.lightningAlpha > 0) this.lightningAlpha = Math.max(0, this.lightningAlpha - 0.08);
++
++        if (time >= this.nextLightning && this.lightningAlpha <= 0) {
++            this.lightningAlpha = 0.35 + Math.random() * 0.35;
++            this.nextLightning = time + 3000 + Math.random() * 8000;
++            this.playThunder();
++        }
++    }
++
++    private playThunder(): void {
++        try {
++            let audioCtx = new AudioContext(),
++                buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.8, audioCtx.sampleRate),
++                data = buffer.getChannelData(0);
++
++            for (let i = 0; i < data.length; i++)
++                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.15));
++
++            let source = audioCtx.createBufferSource();
++
++            source.buffer = buffer;
++
++            let gain = audioCtx.createGain();
++
++            gain.gain.value = 0.12;
++            source.connect(gain);
++            gain.connect(audioCtx.destination);
++            source.start();
++            source.addEventListener('ended', () => audioCtx.close());
++        } catch {
++            // Audio não disponível
++        }
++    }
++
++    public render(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.active || !width || !height) return;
++
++        if (this.isRainWeather() && !this.rainDrops.length) this.initWeatherParticles();
++        if (this.weather === WeatherType.Snow && !this.snowFlakes.length)
++            this.initWeatherParticles();
++
++        let { r, g, b, a } = this.currentTint;
++
++        if (a > 0.005) {
++            context.save();
++            context.fillStyle = `rgba(${r | 0}, ${g | 0}, ${b | 0}, ${a.toFixed(3)})`;
++            context.fillRect(0, 0, width, height);
++            context.restore();
++        }
++
++        this.drawFog(context, width, height);
++        this.drawRainMist(context, width, height);
++        this.drawWetGround(context, width, height);
++        this.drawRainLayer(context, true);
++        this.drawSplashes(context);
++        this.drawRainLayer(context, false);
++        this.drawSnow(context);
++        this.drawLightning(context, width, height);
++    }
++
++    private drawWetGround(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.isRainWeather()) return;
++
++        let isNight = this.isNightRain(),
++            bandH = height * 0.22,
++            shimmer = 0.04 + this.rainMistPulse * 0.025;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, height - bandH, 0, height);
++
++        if (isNight) {
++            gradient.addColorStop(0, 'rgba(60, 80, 110, 0)');
++            gradient.addColorStop(0.55, `rgba(90, 115, 150, ${shimmer * 0.6})`);
++            gradient.addColorStop(1, `rgba(120, 145, 180, ${shimmer})`);
++        } else {
++            gradient.addColorStop(0, 'rgba(180, 200, 220, 0)');
++            gradient.addColorStop(0.55, `rgba(200, 220, 235, ${shimmer * 0.55})`);
++            gradient.addColorStop(1, `rgba(220, 235, 250, ${shimmer * 0.9})`);
++        }
++
++        context.fillStyle = gradient;
++        context.fillRect(0, height - bandH, width, bandH);
++        context.restore();
++    }
++
++    private drawRainMist(context: CanvasRenderingContext2D, width: number, height: number): void {
++        if (!this.isRainWeather()) return;
++
++        let isNight = this.isNightRain(),
++            alpha = (isNight ? 0.06 : 0.04) + this.rainMistPulse * 0.03;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, 0, 0, height);
++
++        gradient.addColorStop(0, `rgba(${isNight ? '120, 140, 170' : '200, 220, 240'}, ${alpha})`);
++        gradient.addColorStop(0.45, `rgba(${isNight ? '90, 110, 140' : '180, 200, 220'}, ${alpha * 0.7})`);
++        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
++
++        context.fillStyle = gradient;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++
++    private drawFog(context: CanvasRenderingContext2D, width: number, height: number): void {
++        let isFog =
++            this.weather === WeatherType.FogDay || this.weather === WeatherType.FogNight;
++
++        if (!isFog) return;
++
++        let isNight = this.weather === WeatherType.FogNight,
++            baseAlpha = isNight ? 0.35 : 0.25,
++            alpha = baseAlpha + this.fogPulse * 0.1;
++
++        context.save();
++
++        let gradient = context.createLinearGradient(0, 0, 0, height);
++
++        if (isNight) {
++            gradient.addColorStop(0, `rgba(180, 190, 210, ${alpha * 0.5})`);
++            gradient.addColorStop(0.5, `rgba(140, 150, 170, ${alpha})`);
++            gradient.addColorStop(1, `rgba(100, 110, 130, ${alpha * 1.2})`);
++        } else {
++            gradient.addColorStop(0, `rgba(230, 235, 240, ${alpha * 0.4})`);
++            gradient.addColorStop(0.5, `rgba(210, 215, 220, ${alpha})`);
++            gradient.addColorStop(1, `rgba(190, 195, 200, ${alpha * 0.8})`);
++        }
++
++        context.fillStyle = gradient;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++
++    private drawRainLayer(context: CanvasRenderingContext2D, background: boolean): void {
++        if (!this.rainDrops.length) return;
++
++        let isStorm = this.weather === WeatherType.Storm,
++            isNight = this.isNightRain(),
++            drops = this.rainDrops.filter((drop) =>
++                background ? drop.depth < 0.55 : drop.depth >= 0.55
++            );
++
++        context.save();
++        context.lineCap = 'round';
++
++        for (let drop of drops) {
++            let tailX = drop.x + drop.drift * 2.5,
++                tailY = drop.y + drop.length,
++                alpha = Math.min(0.9, drop.opacity),
++                r = isNight ? 175 : 195,
++                g = isNight ? 200 : 220,
++                b = isNight ? 230 : 255;
++
++            context.lineWidth = drop.width;
++            context.globalAlpha = alpha * (background ? 0.55 : 1);
++
++            let gradient = context.createLinearGradient(drop.x, drop.y, tailX, tailY);
++
++            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0)`);
++            gradient.addColorStop(0.15, `rgba(${r}, ${g}, ${b}, ${alpha * 0.5})`);
++            gradient.addColorStop(0.85, `rgba(${r}, ${g}, ${b}, ${alpha})`);
++            gradient.addColorStop(1, `rgba(${isStorm ? 220 : 240}, ${isStorm ? 235 : 248}, 255, ${alpha * 0.35})`);
++
++            context.strokeStyle = gradient;
++            context.beginPath();
++            context.moveTo(drop.x, drop.y);
++            context.lineTo(tailX, tailY);
++            context.stroke();
++        }
++
++        context.restore();
++    }
++
++    private drawSplashes(context: CanvasRenderingContext2D): void {
++        if (!this.splashes.length) return;
++
++        let isNight = this.isNightRain();
++
++        context.save();
++
++        for (let splash of this.splashes) {
++            let progress = splash.life / splash.maxLife,
++                fade = 1 - progress,
++                expand = splash.radius * (0.4 + progress * 1.6),
++                alpha = splash.opacity * fade * fade,
++                r = isNight ? 170 : 200,
++                g = isNight ? 200 : 225,
++                b = isNight ? 235 : 255;
++
++            if (alpha <= 0.01) continue;
++
++            context.globalAlpha = alpha;
++
++            // Centro brilhante do impacto
++            context.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.85})`;
++            context.beginPath();
++            context.ellipse(splash.x, splash.y, expand * 0.25, expand * 0.12, 0, 0, Math.PI * 2);
++            context.fill();
++
++            // Anel do pingo no chão
++            context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.7})`;
++            context.lineWidth = 1.2;
++            context.beginPath();
++            context.ellipse(splash.x, splash.y, expand, expand * 0.35, 0, 0, Math.PI * 2);
++            context.stroke();
++
++            // Segundo anel mais fino
++            if (progress < 0.65) {
++                let ring2 = expand * (1.15 + progress * 0.35);
++
++                context.globalAlpha = alpha * 0.45;
++                context.lineWidth = 0.6;
++                context.beginPath();
++                context.ellipse(splash.x, splash.y, ring2, ring2 * 0.3, 0, 0, Math.PI * 2);
++                context.stroke();
++            }
++
++            // Micro-respingos verticais
++            if (progress < 0.5) {
++                let burst = (0.5 - progress) / 0.5,
++                    dropH = 2.5 + burst * 5;
++
++                context.globalAlpha = alpha * 0.9;
++                context.lineWidth = 0.9;
++                context.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
++                context.beginPath();
++                context.moveTo(splash.x - expand * 0.55, splash.y);
++                context.lineTo(splash.x - expand * 0.55, splash.y - dropH);
++                context.moveTo(splash.x, splash.y);
++                context.lineTo(splash.x, splash.y - dropH * 1.15);
++                context.moveTo(splash.x + expand * 0.5, splash.y);
++                context.lineTo(splash.x + expand * 0.5, splash.y - dropH * 0.8);
++                context.stroke();
++            }
++        }
++
++        context.restore();
++    }
++
++    private drawSnow(context: CanvasRenderingContext2D): void {
++        if (!this.snowFlakes.length) return;
++
++        context.save();
++
++        for (let flake of this.snowFlakes) {
++            context.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
++            context.beginPath();
++            context.arc(flake.x, flake.y, flake.size, 0, Math.PI * 2);
++            context.fill();
++        }
++
++        context.restore();
++    }
++
++    private drawLightning(
++        context: CanvasRenderingContext2D,
++        width: number,
++        height: number
++    ): void {
++        if (this.lightningAlpha <= 0) return;
++
++        context.save();
++        context.fillStyle = `rgba(220, 230, 255, ${this.lightningAlpha})`;
++        context.fillRect(0, 0, width, height);
++        context.restore();
++    }
++}
+diff --git a/packages/client/src/renderer/renderer.ts b/packages/client/src/renderer/renderer.ts
+index d639d37..1eb68c2 100644
+--- a/packages/client/src/renderer/renderer.ts
++++ b/packages/client/src/renderer/renderer.ts
+@@ -291,6 +291,8 @@ export default class Renderer {
+ 
+         this.drawDebugging();
+ 
++        this.drawEnvironment();
++
+         this.drawOverlays();
+ 
+         this.drawHoveringCell();
+@@ -330,6 +332,19 @@ export default class Renderer {
+         this.drawCollisions();
+     }
+ 
++    /**
++     * Desenha iluminação ambiente e clima nos mapas externos.
++     * Interiores usam o sistema de overlay existente (tochas, cavernas).
++     */
++
++    private drawEnvironment(): void {
++        this.game.environment.render(
++            this.overlayContext,
++            this.canvasWidth,
++            this.canvasHeight
++        );
++    }
++
+     /**
+      * Overlays are images drawn on top of the game. They aFOvre generally
+      * used in conjunction with the lighting system to give a shadow
+diff --git a/packages/client/src/renderer/updater.ts b/packages/client/src/renderer/updater.ts
+index d31adfb..398bc5e 100644
+--- a/packages/client/src/renderer/updater.ts
++++ b/packages/client/src/renderer/updater.ts
+@@ -32,6 +32,7 @@ export default class Updater {
+         this.updateSounds();
+         this.updateAnimatedTiles();
+         this.updateLights();
++        this.game.environment.update(this.game.time);
+         this.game.menu.getOdinSkillsBar().tickCooldowns(this.game.player.odinSkills);
+     }
+ 
+diff --git a/packages/common/network/impl/environment.ts b/packages/common/network/impl/environment.ts
+new file mode 100644
+index 0000000..d97b462
+--- /dev/null
++++ b/packages/common/network/impl/environment.ts
+@@ -0,0 +1,17 @@
++import Packet from '../packet';
++
++import { Packets } from '@kaetram/common/network';
++
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++import type { Opcodes } from '@kaetram/common/network';
++
++export type EnvironmentPacketCallback = (
++    opcode: Opcodes.Environment,
++    info?: EnvironmentState
++) => void;
++
++export default class EnvironmentPacket extends Packet {
++    public constructor(opcode: Opcodes.Environment, data?: EnvironmentState) {
++        super(Packets.Environment, opcode, data);
++    }
++}
+diff --git a/packages/common/network/impl/index.ts b/packages/common/network/impl/index.ts
+index 8ab2990..4fb365f 100644
+--- a/packages/common/network/impl/index.ts
++++ b/packages/common/network/impl/index.ts
+@@ -53,4 +53,5 @@ export { default as ResourcePacket } from './resource';
+ export { default as BattlePassPacket } from './battlepass';
+ export { default as OdinSkillPacket } from './odinSkill';
+ export { default as CosmoPacket } from './cosmo';
++export { default as EnvironmentPacket } from './environment';
+ 
+diff --git a/packages/common/network/opcodes.ts b/packages/common/network/opcodes.ts
+index 6646b80..3a6cd00 100644
+--- a/packages/common/network/opcodes.ts
++++ b/packages/common/network/opcodes.ts
+@@ -259,3 +259,8 @@ export enum Cosmo {
+     Consume
+ }
+ 
++export enum Environment {
++    Sync,
++    Remove
++}
++
+diff --git a/packages/common/network/packets.ts b/packages/common/network/packets.ts
+index a9813ca..62df60d 100644
+--- a/packages/common/network/packets.ts
++++ b/packages/common/network/packets.ts
+@@ -62,6 +62,7 @@ enum Packets {
+     BattlePass,
+     OdinSkill,
+     Cosmo,
++    Environment,
+ 
+     // Hub <-> Admin
+     AdminSync
+diff --git a/packages/common/types/environment.ts b/packages/common/types/environment.ts
+new file mode 100644
+index 0000000..d02bbdb
+--- /dev/null
++++ b/packages/common/types/environment.ts
+@@ -0,0 +1,78 @@
++/** Períodos do ciclo dia/noite. */
++export enum TimeOfDay {
++    Morning = 0,
++    Afternoon = 1,
++    Evening = 2,
++    Night = 3,
++    DeepNight = 4
++}
++
++/** Quantidade de fases no ciclo (Manhã → … → Alta Madrugada → Manhã). */
++export const TIME_OF_DAY_COUNT = 5;
++
++/** Tipos de clima disponíveis. */
++export enum WeatherType {
++    Clear = 0,
++    RainDay = 1,
++    RainNight = 2,
++    FogDay = 3,
++    FogNight = 4,
++    Snow = 5,
++    Storm = 6
++}
++
++/** Duração de cada período em milissegundos (tempo real). */
++export const TIME_PHASE_DURATION: Record<TimeOfDay, number> = {
++    [TimeOfDay.Morning]: 120_000,
++    [TimeOfDay.Afternoon]: 180_000,
++    [TimeOfDay.Evening]: 90_000,
++    [TimeOfDay.Night]: 150_000,
++    [TimeOfDay.DeepNight]: 90_000
++};
++
++/** Duração da transição suave entre períodos (ms). */
++export const TIME_TRANSITION_DURATION = 30_000;
++
++/** Nomes legíveis para comandos de admin. */
++export const TIME_OF_DAY_NAMES: Record<string, TimeOfDay> = {
++    morning: TimeOfDay.Morning,
++    manha: TimeOfDay.Morning,
++    afternoon: TimeOfDay.Afternoon,
++    tarde: TimeOfDay.Afternoon,
++    evening: TimeOfDay.Evening,
++    entardecer: TimeOfDay.Evening,
++    night: TimeOfDay.Night,
++    noite: TimeOfDay.Night,
++    deep_night: TimeOfDay.DeepNight,
++    deepnight: TimeOfDay.DeepNight,
++    alta_madrugada: TimeOfDay.DeepNight,
++    madrugada: TimeOfDay.DeepNight,
++    latenight: TimeOfDay.DeepNight
++};
++
++export const WEATHER_TYPE_NAMES: Record<string, WeatherType> = {
++    clear: WeatherType.Clear,
++    limpo: WeatherType.Clear,
++    none: WeatherType.Clear,
++    rain_day: WeatherType.RainDay,
++    'chuva_dia': WeatherType.RainDay,
++    rain_night: WeatherType.RainNight,
++    'chuva_noite': WeatherType.RainNight,
++    fog_day: WeatherType.FogDay,
++    'nevoa_dia': WeatherType.FogDay,
++    fog_night: WeatherType.FogNight,
++    'nevoa_noite': WeatherType.FogNight,
++    snow: WeatherType.Snow,
++    neve: WeatherType.Snow,
++    storm: WeatherType.Storm,
++    tempestade: WeatherType.Storm
++};
++
++export interface EnvironmentState {
++    timeOfDay: TimeOfDay;
++    transition: number;
++    weather: WeatherType;
++    cycleEnabled: boolean;
++    /** Milissegundos até a próxima fase (ou fim da transição). -1 se ciclo desligado. */
++    phaseRemaining: number;
++}
+diff --git a/packages/common/types/map.d.ts b/packages/common/types/map.d.ts
+index 722dd84..96310ce 100644
+--- a/packages/common/types/map.d.ts
++++ b/packages/common/types/map.d.ts
+@@ -110,20 +110,31 @@ export interface ProcessedArea {
+ export type Tree = 'Oak' | 'IceOak' | 'Palm' | 'IcePalm';
+ export type Rock = 'BlueSteel';
+ 
++export interface InteriorZone {
++    x: number;
++    y: number;
++    width: number;
++    height: number;
++}
++
+ export interface ProcessedDoor {
+     x: number;
+     y: number;
+     orientation: string;
+     quest: string;
+     achievement: string;
+-    reqAchievement: string; // Achievement requirement to pass through.
++    reqAchievement: string;
+     reqQuest: string;
+     reqItem: string;
+     reqItemCount: number;
+     stage: number;
+     skill: string;
+     level: number;
+-    npc: string; // NPC to trigger chat when player can't pass through.
++    npc: string;
++    /** Porta alterna estado interior/externo ao ser usada. */
++    hasInteriorToggle?: boolean;
++    /** Estado interior após passar por esta porta. */
++    interiorState?: boolean;
+ }
+ 
+ export interface ProcessedResource {
+diff --git a/packages/common/types/messages/outgoing.d.ts b/packages/common/types/messages/outgoing.d.ts
+index aae6844..0fa1b10 100644
+--- a/packages/common/types/messages/outgoing.d.ts
++++ b/packages/common/types/messages/outgoing.d.ts
+@@ -54,4 +54,5 @@ export type { ResourcePacketCallback } from '../../network/impl/resource';
+ export type { BattlePassPacketData, BattlePassPacketCallback } from '../../network/impl/battlepass';
+ export type { OdinSkillPacketData, OdinSkillPacketCallback } from '../../network/impl/odinSkill';
+ export type { CosmoPacketData, CosmoPacketCallback } from '../../network/impl/cosmo';
++export type { EnvironmentPacketCallback } from '../../network/impl/environment';
+ 
+diff --git a/packages/server/src/controllers/commands.ts b/packages/server/src/controllers/commands.ts
+index 43bc587..ff79ca4 100644
+--- a/packages/server/src/controllers/commands.ts
++++ b/packages/server/src/controllers/commands.ts
+@@ -1602,6 +1602,84 @@ export default class Commands {
+ 
+                 return this.player.status.addWithTimeout(effect, 60_000);
+             }
++
++            case 'settime': {
++                let period = blocks.shift();
++
++                if (!period)
++                    return this.player.notify(
++                        'Uso: /settime [morning|afternoon|evening|night|deep_night|manha|tarde|entardecer|noite|madrugada]'
++                    );
++
++                let time = this.world.environment.parseTimeName(period);
++
++                if (time === undefined)
++                    return this.player.notify(`Período inválido: ${period}`);
++
++                this.world.environment.setTimeOfDay(time);
++                this.player.notify(`Período definido: ${this.world.environment.getTimeLabel()}`);
++
++                return;
++            }
++
++            case 'setweather': {
++                let weatherName = blocks.shift();
++
++                if (!weatherName)
++                    return this.player.notify(
++                        'Uso: /setweather [clear|rain_day|rain_night|fog_day|fog_night|snow|storm]'
++                    );
++
++                let weather = this.world.environment.parseWeatherName(weatherName);
++
++                if (weather === undefined)
++                    return this.player.notify(`Clima inválido: ${weatherName}`);
++
++                this.world.environment.setWeather(weather);
++                this.player.notify(`Clima definido: ${this.world.environment.getWeatherLabel()}`);
++
++                return;
++            }
++
++            case 'clearweather': {
++                this.world.environment.clearWeather();
++                this.player.notify('Efeitos de clima removidos.');
++
++                return;
++            }
++
++            case 'clearenv':
++            case 'resetenv':
++            case 'limparenv': {
++                this.world.environment.reset();
++                this.player.notify(
++                    'Ambiente restaurado: Manhã, sem clima.'
++                );
++
++                return;
++            }
++
++            case 'timecycle': {
++                let state = blocks.shift();
++
++                if (!state || (state !== 'on' && state !== 'off'))
++                    return this.player.notify('Uso: /timecycle [on|off]');
++
++                this.world.environment.setCycleEnabled(state === 'on');
++                this.player.notify(
++                    `Ciclo automático dia/noite: ${state === 'on' ? 'ativado' : 'desativado'}`
++                );
++
++                return;
++            }
++
++            case 'env': {
++                this.player.notify(
++                    `Ambiente — ${this.world.environment.getTimeLabel()} | Clima: ${this.world.environment.getWeatherLabel()} | Ciclo: ${this.world.environment.cycleEnabled ? 'ON' : 'OFF'} | Local: ${this.player.isInInterior() ? 'Interior' : 'Exterior'}`
++                );
++
++                return;
++            }
+         }
+     }
+ }
+diff --git a/packages/server/src/game/entity/character/player/handler.ts b/packages/server/src/game/entity/character/player/handler.ts
+index 64879e7..a092ebb 100644
+--- a/packages/server/src/game/entity/character/player/handler.ts
++++ b/packages/server/src/game/entity/character/player/handler.ts
+@@ -304,6 +304,8 @@ export default class Handler {
+ 
+         this.player.teleport(door.x, door.y);
+ 
++        if (door.hasInteriorToggle) this.player.syncEnvironmentFromPosition();
++
+         log.debug(`[${this.player.username}] Going through door: ${door.x} - ${door.y}`);
+     }
+ 
+@@ -321,6 +323,7 @@ export default class Handler {
+ 
+         this.detectAggro();
+         this.detectAreas(x, y);
++        this.player.syncEnvironmentFromPosition();
+         this.detectEffects(x, y);
+ 
+         this.player.storeOpen = '';
+diff --git a/packages/server/src/game/entity/character/player/incoming.ts b/packages/server/src/game/entity/character/player/incoming.ts
+index 6b11d4b..0f1af70 100644
+--- a/packages/server/src/game/entity/character/player/incoming.ts
++++ b/packages/server/src/game/entity/character/player/incoming.ts
+@@ -286,6 +286,8 @@ export default class Incoming {
+ 
+         this.player.welcome();
+ 
++        this.player.updateEnvironment();
++
+         // A secondary check after the player has fully loaded in.
+         this.world.api.isPlayerOnline(this.player.username, (online: boolean) => {
+             if (online) this.player.connection.reject('loggedin');
+diff --git a/packages/server/src/game/entity/character/player/player.ts b/packages/server/src/game/entity/character/player/player.ts
+index f9c8614..3a76281 100644
+--- a/packages/server/src/game/entity/character/player/player.ts
++++ b/packages/server/src/game/entity/character/player/player.ts
+@@ -222,6 +222,8 @@ export default class Player extends Character {
+ 
+     private cameraArea: Area | undefined;
+     public overlayArea: Area | undefined;
++    /** Cache para detectar mudança interior/exterior ao se mover. */
++    public wasInInterior = false;
+ 
+     public readyTimeout!: NodeJS.Timeout | null;
+ 
+@@ -1487,9 +1489,15 @@ export default class Player extends Character {
+         if (!overlay) {
+             tempOverlay?.removePlayer(this);
+ 
+-            return this.send(new OverlayPacket(Opcodes.Overlay.Remove));
++            this.send(new OverlayPacket(Opcodes.Overlay.Remove));
++            this.updateEnvironment();
++
++            return;
+         }
+ 
++        // Interior: desativa ambiente externo (clima e ciclo dia/noite).
++        this.updateEnvironment();
++
+         // New overlay is being loaded, remove lights.
+         this.lightsLoaded = [];
+ 
+@@ -1508,6 +1516,37 @@ export default class Player extends Character {
+         if (overlay.isStatusArea()) overlay.addPlayer(this);
+     }
+ 
++    /**
++     * Interior = caverna com overlay escuro ou sala de prédio (zona do mapa).
++     */
++    public isInInterior(): boolean {
++        return (
++            !!this.overlayArea ||
++            this.world.map.isInteriorPosition(this.x, this.y)
++        );
++    }
++
++    /**
++     * Atualiza clima/dia quando o jogador muda entre interior e exterior.
++     */
++    public syncEnvironmentFromPosition(): void {
++        let inInterior = this.isInInterior();
++
++        if (inInterior === this.wasInInterior) return;
++
++        this.updateEnvironment();
++    }
++
++    /**
++     * Sincroniza ou remove efeitos ambientais conforme o jogador está em exterior ou interior.
++     */
++    public updateEnvironment(): void {
++        this.wasInInterior = this.isInInterior();
++
++        if (this.isInInterior()) this.world.environment.removeFromPlayer(this);
++        else this.world.environment.syncPlayer(this);
++    }
++
+     /**
+      * Detects a camera region and sends a packet to the client.
+      * @param camera Camera area containing camera data or an undefined object.
+diff --git a/packages/server/src/game/environment/environment.ts b/packages/server/src/game/environment/environment.ts
+new file mode 100644
+index 0000000..6c11dee
+--- /dev/null
++++ b/packages/server/src/game/environment/environment.ts
+@@ -0,0 +1,217 @@
++import {
++    TIME_OF_DAY_COUNT,
++    TIME_OF_DAY_NAMES,
++    TIME_PHASE_DURATION,
++    TIME_TRANSITION_DURATION,
++    TimeOfDay,
++    WeatherType,
++    WEATHER_TYPE_NAMES
++} from '@kaetram/common/types/environment';
++import { EnvironmentPacket } from '@kaetram/common/network/impl';
++import { Opcodes } from '@kaetram/common/network';
++
++import type World from '../world';
++import type Player from '../entity/character/player/player';
++import type { EnvironmentState } from '@kaetram/common/types/environment';
++
++const TIME_LABELS = ['Manhã', 'Tarde', 'Entardecer', 'Noite', 'Alta Madrugada'];
++const WEATHER_LABELS = [
++    'Limpo',
++    'Chuva (dia)',
++    'Chuva (noite)',
++    'Névoa (dia)',
++    'Névoa (noite)',
++    'Neve',
++    'Tempestade'
++];
++
++/**
++ * Gerencia o ciclo dia/noite e o clima global do mundo.
++ * Afeta apenas jogadores em mapas externos (fora de overlay areas).
++ */
++export default class Environment {
++    public timeOfDay: TimeOfDay = TimeOfDay.Morning;
++    public weather: WeatherType = WeatherType.Clear;
++    public transition = 0;
++    public cycleEnabled = true;
++
++    private phaseElapsed = 0;
++    private lastTick = Date.now();
++    private lastSync = 0;
++
++    /** Intervalo mínimo entre sincronizações com clientes (ms). */
++    private readonly syncInterval = 2000;
++
++    public constructor(private world: World) {
++        this.startTick();
++    }
++
++    /**
++     * Avança o ciclo temporal automaticamente.
++     */
++    private startTick(): void {
++        setInterval(() => this.tick(), 1000);
++    }
++
++    private tick(): void {
++        let now = Date.now(),
++            delta = now - this.lastTick;
++
++        this.lastTick = now;
++
++        if (!this.cycleEnabled) return;
++
++        let phaseDuration = TIME_PHASE_DURATION[this.timeOfDay],
++            totalDuration = phaseDuration + TIME_TRANSITION_DURATION;
++
++        this.phaseElapsed += delta;
++
++        if (this.phaseElapsed >= phaseDuration) {
++            this.transition = Math.min(
++                1,
++                (this.phaseElapsed - phaseDuration) / TIME_TRANSITION_DURATION
++            );
++        } else {
++            this.transition = 0;
++        }
++
++        if (this.phaseElapsed >= totalDuration) {
++            this.phaseElapsed = 0;
++            this.transition = 0;
++            this.timeOfDay = this.getNextTimeOfDay();
++        }
++
++        if (now - this.lastSync >= this.syncInterval) {
++            this.lastSync = now;
++            this.syncAllExterior();
++        }
++    }
++
++    private getNextTimeOfDay(): TimeOfDay {
++        return ((this.timeOfDay + 1) % TIME_OF_DAY_COUNT) as TimeOfDay;
++    }
++
++    public getState(): EnvironmentState {
++        return {
++            timeOfDay: this.timeOfDay,
++            transition: this.transition,
++            weather: this.weather,
++            cycleEnabled: this.cycleEnabled,
++            phaseRemaining: this.getPhaseRemaining()
++        };
++    }
++
++    /**
++     * Tempo restante até a próxima fase do dia (ms). -1 quando o ciclo está pausado.
++     */
++    public getPhaseRemaining(): number {
++        if (!this.cycleEnabled) return -1;
++
++        let phaseDuration = TIME_PHASE_DURATION[this.timeOfDay],
++            totalDuration = phaseDuration + TIME_TRANSITION_DURATION;
++
++        return Math.max(0, totalDuration - this.phaseElapsed);
++    }
++
++    /**
++     * Verifica se o jogador está em interior (overlay area, casas, lojas, cavernas).
++     */
++    public isPlayerExterior(player: Player): boolean {
++        return !player.isInInterior();
++    }
++
++    /**
++     * Envia o estado ambiental para um jogador em mapa externo.
++     */
++    public syncPlayer(player: Player): void {
++        if (!this.isPlayerExterior(player)) return;
++
++        player.send(new EnvironmentPacket(Opcodes.Environment.Sync, this.getState()));
++    }
++
++    /**
++     * Remove efeitos ambientais do cliente (interior).
++     */
++    public removeFromPlayer(player: Player): void {
++        player.send(new EnvironmentPacket(Opcodes.Environment.Remove));
++    }
++
++    /**
++     * Sincroniza todos os jogadores em mapas externos.
++     */
++    public syncAllExterior(): void {
++        this.world.entities.forEachPlayer((player: Player) => this.syncPlayer(player));
++    }
++
++    /**
++     * Define o período do dia manualmente.
++     */
++    public setTimeOfDay(time: TimeOfDay): void {
++        this.timeOfDay = time;
++        this.transition = 0;
++        this.phaseElapsed = 0;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Define o clima manualmente, interrompendo o clima anterior.
++     */
++    public setWeather(weather: WeatherType): void {
++        this.weather = weather;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Remove todos os efeitos de clima, mantendo o período do dia.
++     */
++    public clearWeather(): void {
++        this.weather = WeatherType.Clear;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Restaura o ambiente padrão: manhã, sem clima e sem transição.
++     */
++    public reset(): void {
++        this.timeOfDay = TimeOfDay.Morning;
++        this.weather = WeatherType.Clear;
++        this.transition = 0;
++        this.phaseElapsed = 0;
++        this.syncAllExterior();
++    }
++
++    /**
++     * Liga/desliga o ciclo automático dia/noite.
++     */
++    public setCycleEnabled(enabled: boolean): void {
++        this.cycleEnabled = enabled;
++
++        if (enabled) {
++            this.phaseElapsed = 0;
++            this.transition = 0;
++        }
++
++        this.syncAllExterior();
++    }
++
++    public parseTimeName(name: string): TimeOfDay | undefined {
++        return TIME_OF_DAY_NAMES[name.toLowerCase()];
++    }
++
++    public parseWeatherName(name: string): WeatherType | undefined {
++        return WEATHER_TYPE_NAMES[name.toLowerCase()];
++    }
++
++    public getTimeLabel(): string {
++        let next = this.getNextTimeOfDay(),
++            label = TIME_LABELS[this.timeOfDay];
++
++        if (this.transition > 0) label += ` → ${TIME_LABELS[next]} (${Math.round(this.transition * 100)}%)`;
++
++        return label;
++    }
++
++    public getWeatherLabel(): string {
++        return WEATHER_LABELS[this.weather] || 'Desconhecido';
++    }
++}
+diff --git a/packages/server/src/game/map/map.ts b/packages/server/src/game/map/map.ts
+index 3d19042..ebc5f24 100644
+--- a/packages/server/src/game/map/map.ts
++++ b/packages/server/src/game/map/map.ts
+@@ -9,7 +9,7 @@ import { Modules } from '@kaetram/common/network';
+ import type World from '../world';
+ import type Areas from './areas/areas';
+ import type Player from '../entity/character/player/player';
+-import type { ProcessedArea, ProcessedDoor, ProcessedMap, Tile } from '@kaetram/common/types/map';
++import type { ProcessedArea, ProcessedDoor, ProcessedMap, Tile, InteriorZone } from '@kaetram/common/types/map';
+ import type Entity from '../entity/entity';
+ 
+ let map = mapData as ProcessedMap;
+@@ -34,6 +34,7 @@ export default class Map {
+     public objects: number[] = map.objects;
+     public cursors: { [tileId: number]: string } = map.cursors;
+     public doors: { [index: number]: ProcessedDoor } = {};
++    public interiorZones: InteriorZone[] = [];
+     public warps: ProcessedArea[] = map.areas.warps || [];
+     public lights: ProcessedArea[] = map.areas.lights || [];
+     public signs: ProcessedArea[] = map.areas.signs || [];
+@@ -46,8 +47,8 @@ export default class Map {
+     public constructor(public world: World) {
+         this.loadAreas();
+         this.loadDoors();
+-
+         this.regions = new Regions(this);
++        this.loadInteriorZones();
+     }
+ 
+     /**
+@@ -113,6 +114,300 @@ export default class Map {
+         }
+     }
+ 
++    /**
++     * Gera zonas interiores (casas, lojas) a partir de portas que teleportam
++     * para salas isoladas. Usa flood-fill limitado sem atravessar outras portas.
++     */
++    /** Tamanho máximo de uma sala interior (evita zonas gigantes). */
++    private readonly maxInteriorZoneSize = 55;
++    private readonly maxInteriorZoneArea = 2500;
++    private readonly maxInteriorFloodTiles = 400;
++
++    private loadInteriorZones(): void {
++        let doors = map.areas.doors,
++            doorTiles = new Set(doors.map((door) => this.coordToIndex(door.x, door.y))),
++            byId: { [id: number]: ProcessedArea } = {},
++            zones: InteriorZone[] = [];
++
++        for (let door of doors) byId[door.id] = door;
++
++        let processedPairs = new Set<string>();
++
++        for (let door of doors) {
++            if (!door.destination || door.quest || door.reqItem || door.level) continue;
++
++            let destination = byId[door.destination];
++
++            if (!destination) continue;
++
++            let pairKey =
++                door.id < destination.id
++                    ? `${door.id}:${destination.id}`
++                    : `${destination.id}:${door.id}`;
++
++            if (processedPairs.has(pairKey)) continue;
++
++            processedPairs.add(pairKey);
++
++            let distance =
++                Math.abs(destination.x - door.x) + Math.abs(destination.y - door.y);
++
++            if (distance < 50) continue;
++
++            let entranceZone = this.getInteriorZoneBounds(door.x, door.y, doorTiles),
++                destinationZone = this.getInteriorZoneBounds(
++                    destination.x,
++                    destination.y,
++                    doorTiles
++                );
++
++            this.collectInteriorZone(zones, entranceZone, destinationZone);
++
++            let sides = this.resolveInteriorDoorPair(
++                door,
++                destination,
++                entranceZone,
++                destinationZone
++            );
++
++            if (!sides) continue;
++
++            let insideIndex = this.coordToIndex(sides.insideDoor.x, sides.insideDoor.y),
++                outsideIndex = this.coordToIndex(sides.outsideDoor.x, sides.outsideDoor.y),
++                insideDoorData = this.doors[insideIndex],
++                outsideDoorData = this.doors[outsideIndex];
++
++            if (outsideDoorData) {
++                outsideDoorData.hasInteriorToggle = true;
++                outsideDoorData.interiorState = true;
++            }
++
++            if (insideDoorData) {
++                insideDoorData.hasInteriorToggle = true;
++                insideDoorData.interiorState = false;
++            }
++        }
++
++        this.interiorZones = this.dedupeInteriorZones(zones);
++    }
++
++    /**
++     * Registra apenas zonas pequenas o bastante para serem salas interiores.
++     */
++    private collectInteriorZone(
++        zones: InteriorZone[],
++        entranceZone: InteriorZone | undefined,
++        destinationZone: InteriorZone | undefined
++    ): void {
++        if (entranceZone && destinationZone) {
++            let entranceArea = entranceZone.width * entranceZone.height,
++                destinationArea = destinationZone.width * destinationZone.height;
++
++            zones.push(entranceArea <= destinationArea ? entranceZone : destinationZone);
++
++            return;
++        }
++
++        let sole = entranceZone || destinationZone;
++
++        if (!sole) return;
++
++        if (sole.width * sole.height <= this.maxInteriorZoneArea / 2) zones.push(sole);
++    }
++
++    /**
++     * Determina qual porta fica no interior e qual fica no exterior.
++     */
++    private resolveInteriorDoorPair(
++        door: ProcessedArea,
++        destination: ProcessedArea,
++        entranceZone: InteriorZone | undefined,
++        destinationZone: InteriorZone | undefined
++    ): { insideDoor: ProcessedArea; outsideDoor: ProcessedArea } | undefined {
++        if (entranceZone && destinationZone) {
++            let interiorZone =
++                    entranceZone.width * entranceZone.height <=
++                    destinationZone.width * destinationZone.height
++                        ? entranceZone
++                        : destinationZone,
++                doorInside = this.isPositionInZone(door.x, door.y, interiorZone),
++                destInside = this.isPositionInZone(destination.x, destination.y, interiorZone);
++
++            if (doorInside !== destInside)
++                return {
++                    insideDoor: doorInside ? door : destination,
++                    outsideDoor: doorInside ? destination : door
++                };
++        }
++
++        let entranceArea = entranceZone ? entranceZone.width * entranceZone.height : -1,
++            destinationArea = destinationZone ? destinationZone.width * destinationZone.height : -1,
++            smallInteriorThreshold = this.maxInteriorZoneArea / 2;
++
++        if (entranceArea < 0 && destinationArea < 0) return;
++
++        if (entranceArea >= 0 && destinationArea >= 0) {
++            if (entranceArea === destinationArea) return;
++
++            return entranceArea < destinationArea
++                ? { insideDoor: door, outsideDoor: destination }
++                : { insideDoor: destination, outsideDoor: door };
++        }
++
++        if (entranceArea >= 0)
++            return entranceArea <= smallInteriorThreshold
++                ? { insideDoor: door, outsideDoor: destination }
++                : { insideDoor: destination, outsideDoor: door };
++
++        return destinationArea! <= smallInteriorThreshold
++            ? { insideDoor: destination, outsideDoor: door }
++            : { insideDoor: door, outsideDoor: destination };
++    }
++
++    private getInteriorZoneBounds(
++        startX: number,
++        startY: number,
++        doorTiles: Set<number>
++    ): InteriorZone | undefined {
++        let starts: Position[] = [];
++
++        if (!this.isOutOfBounds(startX, startY) && !this.isColliding(startX, startY))
++            starts.push({ x: startX, y: startY });
++        else
++            for (let [dx, dy] of [
++                [0, 1],
++                [0, -1],
++                [1, 0],
++                [-1, 0]
++            ]) {
++                let nextX = startX + dx,
++                    nextY = startY + dy,
++                    index = this.coordToIndex(nextX, nextY);
++
++                if (
++                    this.isOutOfBounds(nextX, nextY) ||
++                    doorTiles.has(index) ||
++                    this.isColliding(nextX, nextY)
++                )
++                    continue;
++
++                starts.push({ x: nextX, y: nextY });
++            }
++
++        if (!starts.length) return;
++
++        let queue = [...starts],
++            visited = new Set<number>();
++
++        for (let start of starts) visited.add(this.coordToIndex(start.x, start.y));
++
++        let minX = startX,
++            maxX = startX,
++            minY = startY,
++            maxY = startY,
++            count = 0,
++            maxTiles = this.maxInteriorFloodTiles;
++
++        while (queue.length > 0 && count < maxTiles) {
++            let { x, y } = queue.shift()!;
++
++            count++;
++
++            minX = Math.min(minX, x);
++            maxX = Math.max(maxX, x);
++            minY = Math.min(minY, y);
++            maxY = Math.max(maxY, y);
++
++            for (let [dx, dy] of [
++                [0, 1],
++                [0, -1],
++                [1, 0],
++                [-1, 0]
++            ]) {
++                let nextX = x + dx,
++                    nextY = y + dy,
++                    index = this.coordToIndex(nextX, nextY);
++
++                if (
++                    this.isOutOfBounds(nextX, nextY) ||
++                    visited.has(index) ||
++                    doorTiles.has(index) ||
++                    this.isColliding(nextX, nextY)
++                )
++                    continue;
++
++                visited.add(index);
++                queue.push({ x: nextX, y: nextY });
++            }
++        }
++
++        if (count < 20) return;
++
++        let width = maxX - minX + 1,
++            height = maxY - minY + 1;
++
++        if (
++            width > this.maxInteriorZoneSize ||
++            height > this.maxInteriorZoneSize ||
++            width * height > this.maxInteriorZoneArea
++        )
++            return;
++
++        return { x: minX, y: minY, width, height };
++    }
++
++    private isPositionInZone(
++        x: number,
++        y: number,
++        zone: InteriorZone | undefined
++    ): boolean {
++        if (!zone) return false;
++
++        return (
++            x >= zone.x &&
++            y >= zone.y &&
++            x < zone.x + zone.width &&
++            y < zone.y + zone.height
++        );
++    }
++
++    /**
++     * Remove zonas duplicadas sem fundir áreas distantes (evita bloquear o mapa externo).
++     */
++    private dedupeInteriorZones(zones: InteriorZone[]): InteriorZone[] {
++        let unique: InteriorZone[] = [];
++
++        for (let zone of zones) {
++            let duplicate = unique.some(
++                (existing) =>
++                    existing.x === zone.x &&
++                    existing.y === zone.y &&
++                    existing.width === zone.width &&
++                    existing.height === zone.height
++            );
++
++            if (!duplicate) unique.push(zone);
++        }
++
++        return unique;
++    }
++
++    /**
++     * Verifica se a posição está dentro de uma zona interior (casa, loja, etc.).
++     */
++    public isInteriorPosition(x: number, y: number): boolean {
++        for (let zone of this.interiorZones)
++            if (
++                x >= zone.x &&
++                y >= zone.y &&
++                x < zone.x + zone.width &&
++                y < zone.y + zone.height
++            )
++                return true;
++
++        return false;
++    }
++
+     /**
+      * Converts a coordinate (x and y) into an array index.
+      * @returns Index position relative to a 1 dimensional array.
+diff --git a/packages/server/src/game/world.ts b/packages/server/src/game/world.ts
+index 00d1db2..8be4c49 100644
+--- a/packages/server/src/game/world.ts
++++ b/packages/server/src/game/world.ts
+@@ -12,6 +12,7 @@ import API from '../network/api';
+ import Network from '../network/network';
+ import Client from '../network/client';
+ import Events from '../controllers/events';
++import Environment from './environment/environment';
+ 
+ import config from '@kaetram/common/config';
+ import log from '@kaetram/common/util/log';
+@@ -53,6 +54,7 @@ export default class World {
+     public guilds: Guilds;
+     public client: Client;
+     public events: Events;
++    public environment: Environment;
+ 
+     public discord: Discord = new Discord(config.hubEnabled);
+ 
+@@ -77,6 +79,7 @@ export default class World {
+         this.guilds = new Guilds(this);
+         this.client = new Client(this);
+         this.events = new Events(this);
++        this.environment = new Environment(this);
+ 
+         this.discord.onMessage(this.globalMessage.bind(this));
+ 

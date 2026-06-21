@@ -1,0 +1,37 @@
+﻿ packages/client/data/maps/mapa_teste.json          |   1 +
+ packages/client/package.json                       |   2 +
+ packages/client/scripts/sync-map-public.mjs        |  17 ++
+ packages/client/src/controllers/entities.ts        |  12 ++
+ packages/client/src/game.ts                        |  46 +++++-
+ packages/client/src/map/map.ts                     |  84 ++++++++++
+ packages/client/src/network/connection.ts          |  61 ++++++-
+ packages/client/src/network/messages.ts            |   7 +
+ packages/client/src/renderer/camera.ts             |  28 ++++
+ packages/client/src/renderer/renderer.ts           |  11 +-
+ packages/client/src/renderer/updater.ts            |   7 +
+ packages/client/src/renderer/webgl/webgl.ts        |  24 +++
+ packages/common/database/mongodb/creator.ts        |   2 +
+ packages/common/network/impl/changemap.ts          |  22 +++
+ packages/common/network/impl/index.ts              |   1 +
+ packages/common/network/impl/player.ts             |   6 +
+ packages/common/network/packets.ts                 |   2 +
+ packages/common/types/mapregistry.d.ts             |  15 ++
+ packages/common/types/messages/outgoing.d.ts       |   1 +
+ packages/server/data/maps/mapa_teste.json          |   1 +
+ packages/server/data/maps/registry.json            |  19 +++
+ packages/server/src/controllers/commands.ts        |  53 +++++-
+ packages/server/src/controllers/entities.ts        | 178 +++++++++++----------
+ .../server/src/game/entity/character/character.ts  |  13 +-
+ .../src/game/entity/character/player/handler.ts    |   6 +-
+ .../src/game/entity/character/player/incoming.ts   |  22 ++-
+ .../src/game/entity/character/player/player.ts     | 115 ++++++++++++-
+ packages/server/src/game/entity/entity.ts          |   4 +
+ packages/server/src/game/map/map.ts                |  79 +++++----
+ packages/server/src/game/map/mapmanager.ts         | 124 ++++++++++++++
+ packages/server/src/game/world.ts                  |   9 +-
+ packages/tools/map/data/map.tmj                    | 157 ++++++++++++++++++
+ packages/tools/map/data/tilesheet-1.png            | Bin 0 -> 504391 bytes
+ packages/tools/map/data/tilesheet-1.tsx            |   9 ++
+ packages/tools/map/parser/exporter.ts              | 123 ++++++++------
+ packages/tools/map/parser/parser.ts                |   8 +
+ 36 files changed, 1077 insertions(+), 192 deletions(-)
