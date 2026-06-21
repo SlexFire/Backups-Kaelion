@@ -2,6 +2,8 @@
 
 Backups versionados de features do [Kaelion-Online](https://github.com/PeresNFT/Kaelion-Online), prontos para restaurar via patch, bundle ou cópia de arquivos.
 
+Repositório: https://github.com/SlexFire/Backups-Kaelion
+
 ## Backups disponíveis
 
 | Pasta | Feature | Data |
